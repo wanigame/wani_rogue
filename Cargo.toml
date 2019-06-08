@@ -1,0 +1,10 @@
+[package]
+name = "wani_rogue"
+version = "0.1.0"
+authors = ["wanigame"]
+edition = "2018"
+
+[dependencies]
+
+[lib]
+crate-type = ["cdylib"]
