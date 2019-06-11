@@ -44,27 +44,12 @@ impl RandomMap {
 
     /// Initialize step 1: Build a maze by stretching the wall.
     fn build_maze(mut map: Map) -> Map {
-        let w = map[0].len();
-        let h = map.len();
+        map = RandomMap::build_wall(map);
 
-        // Build Wall
-        for i in 0..w {
-            for j in 0..h {
-                if i == 0 || i == w - 1 || j == 0 || j == h - 1 {
-                    map[j][i] = MapComponent::WALL;
-                }
-            }
-        }
-
-        // Create Post
-        let mut posts = Vec::new();
-        for i in 0..((w - 3) / 2) {
-            for j in 0..((h - 3) / 2) {
-                posts.push(Vec2::new((i as isize + 1) * 2, (j as isize + 1) * 2));
-            }
-        }
+        let mut posts = RandomMap::make_post(&map);
 
         'post: while posts.len() > 0 {
+            // Create base point for wall stretching
             let post_index_start = random(0..posts.len() as isize) as usize;
             let post_start = &posts[post_index_start];
 
@@ -74,11 +59,10 @@ impl RandomMap {
                     continue;
                 }
                 MapComponent::NONE => {
-                    use std::collections::VecDeque;
-
                     let mut cursor = *post_start;
-                    let mut wall_candidacy = VecDeque::new();
-                    wall_candidacy.push_back(cursor);
+                    let mut wall_candidacy = Vec::new();
+                    wall_candidacy.push(cursor);
+
                     'grow: loop {
                         match RandomMap::_get_component(&map, &cursor) {
                             MapComponent::NONE => {
@@ -90,30 +74,37 @@ impl RandomMap {
                                 ];
 
                                 'dir: while direction.len() > 0 {
+                                    // Decide direction to stretch the wall
                                     let rand = random(0..direction.len() as isize) as usize;
 
                                     let dir = direction[rand];
                                     direction.remove(rand);
 
                                     let cursor_next = cursor + dir * 2;
+
+                                    // Check if next cursor is already candidates for the wall
                                     for v in &wall_candidacy {
                                         if *v == cursor_next {
+                                            // Redetermine the direction
                                             continue 'dir;
                                         }
                                     }
 
-                                    wall_candidacy.push_back(cursor + dir);
-                                    wall_candidacy.push_back(cursor_next);
+                                    // Stretch the wall
+                                    wall_candidacy.push(cursor + dir);
+                                    wall_candidacy.push(cursor_next);
                                     cursor = cursor_next;
 
                                     continue 'grow;
                                 }
 
-                                let cursor_prev = wall_candidacy.pop_back();
-                                wall_candidacy.pop_back();
-                                wall_candidacy.push_back(cursor_prev.unwrap());
+                                // If the next cursor is only wall candidate, rewind the cursor
+                                let cursor_prev = wall_candidacy.pop();
+                                wall_candidacy.pop();
+                                wall_candidacy.push(cursor_prev.unwrap());
                             }
                             MapComponent::WALL => {
+                                // Build walls on consecutive wall candidates
                                 let mut wall_prev = *post_start;
                                 for v in &wall_candidacy {
                                     if (*v - wall_prev).len() <= 1.0 {
@@ -132,6 +123,35 @@ impl RandomMap {
         }
 
         map
+    }
+
+    fn build_wall(mut map: Map) -> Map {
+        let w = map[0].len();
+        let h = map.len();
+
+        for i in 0..w {
+            for j in 0..h {
+                if i == 0 || i == w - 1 || j == 0 || j == h - 1 {
+                    map[j][i] = MapComponent::WALL;
+                }
+            }
+        }
+
+        map
+    }
+
+    fn make_post(map: &Map) -> Vec<Vec2<isize>> {
+        let w = map[0].len();
+        let h = map.len();
+
+        let mut posts = Vec::new();
+        for i in 0..((w - 3) / 2) {
+            for j in 0..((h - 3) / 2) {
+                posts.push(Vec2::new((i as isize + 1) * 2, (j as isize + 1) * 2));
+            }
+        }
+
+        posts
     }
 
     pub fn get_component(self, coord: &Vec2<isize>) -> MapComponent {
