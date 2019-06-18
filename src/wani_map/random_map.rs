@@ -44,7 +44,7 @@ impl RandomMap {
 
     /// Initialize step 1: Build a maze by stretching the wall.
     fn build_maze(mut map: Map) -> Map {
-        map = RandomMap::build_wall(map);
+        map = RandomMap::build_outerwall(map);
 
         let mut posts = RandomMap::make_post(&map);
 
@@ -125,7 +125,7 @@ impl RandomMap {
         map
     }
 
-    fn build_wall(mut map: Map) -> Map {
+    fn build_outerwall(mut map: Map) -> Map {
         let w = map[0].len();
         let h = map.len();
 
