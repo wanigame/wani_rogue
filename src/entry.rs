@@ -39,10 +39,11 @@ pub fn init() {
         let mut m = String::new();
         for j in i {
             match j {
-                MapComponent::WALL => m += "壁",
-                MapComponent::NONE => m += "　",
+                MapComponent::WALL => m += "\x1b[40m　",
+                MapComponent::NONE => m += "\x1b[46m　",
             }
         }
+        m += "\x1b[0m";
         log(&m);
     }
 }
