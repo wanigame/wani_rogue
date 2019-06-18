@@ -27,7 +27,7 @@ pub fn log(log: &str) {
 
 /// Generate random numbers from range.
 pub fn random(range: Range<isize>) -> isize {
-    unsafe { js_random(range.start.abs() + range.end.abs()) + range.start }
+    unsafe { js_random(range.end - range.start) + range.start }
 }
 
 /// Call point from Javascript.
