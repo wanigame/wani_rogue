@@ -98,14 +98,23 @@ impl RandomMap {
                                     continue 'grow;
                                 }
 
-                                // If the next cursor is only wall candidate, rewind the cursor
-                                let cursor_prev = wall_candidacy.pop();
-                                wall_candidacy.pop();
-                                wall_candidacy.push(cursor_prev.unwrap());
+                                // If the next cursor is only wall candidate,
+                                // rewind the cursor to the end on consecutive wall candidates
+                                let mut wall_prev = wall_candidacy[0];
+                                let mut index_end = 0;
+                                for i in 0..wall_candidacy.len() {
+                                    if (wall_candidacy[i] - wall_prev).len() <= 1.0 {
+                                        wall_prev = wall_candidacy[i];
+                                        index_end = i;
+                                    }
+                                }
+                                cursor = wall_candidacy[index_end - 2];
+                                // Leave the end of wall candidate as a dummy candidate
+                                wall_candidacy.remove(index_end - 1);
                             }
                             MapComponent::WALL => {
                                 // Build walls on consecutive wall candidates
-                                let mut wall_prev = *post_start;
+                                let mut wall_prev = wall_candidacy[0];
                                 for v in &wall_candidacy {
                                     if (*v - wall_prev).len() <= 1.0 {
                                         map[v.y as usize][v.x as usize] = MapComponent::WALL;
