@@ -29,6 +29,8 @@ impl RandomMap {
         log("build_maze");
         map = RandomMap::build_room(map);
         log("build_rooom");
+        map = RandomMap::remove_deadend(map);
+        log("remove_deadend");
 
         RandomMap { map }
     }
@@ -201,6 +203,80 @@ impl RandomMap {
                     }
                 }
                 break;
+            }
+        }
+
+        map
+    }
+
+    /// Initialize step 3: Remove dead end.
+    pub fn remove_deadend(mut map: Map) -> Map {
+        let w = map[0].len();
+        let h = map.len();
+        let mut count_road = vec![vec![-1; w]; h];
+
+        // Count the number of branches
+        for i in 1..h - 1 {
+            for j in 1..w - 1 {
+                match map[i][j] {
+                    MapComponent::NONE => {
+                        let mut count = 0;
+                        match map[i - 1][j] {
+                            MapComponent::NONE => count += 1,
+                            MapComponent::ROOM => count += 1,
+                            _ => {}
+                        }
+                        match map[i + 1][j] {
+                            MapComponent::NONE => count += 1,
+                            MapComponent::ROOM => count += 1,
+                            _ => {}
+                        }
+                        match map[i][j - 1] {
+                            MapComponent::NONE => count += 1,
+                            MapComponent::ROOM => count += 1,
+                            _ => {}
+                        }
+                        match map[i][j + 1] {
+                            MapComponent::NONE => count += 1,
+                            MapComponent::ROOM => count += 1,
+                            _ => {}
+                        }
+                        count_road[i][j] = count;
+                    }
+                    _ => {}
+                }
+            }
+        }
+
+        // Remove dead end
+        for i in 1..h - 1 {
+            for j in 1..w - 1 {
+                if count_road[i][j] == 1 {
+                    let mut k = i;
+                    let mut l = j;
+
+                    loop {
+                        map[k][l] = MapComponent::WALL;
+                        count_road[k][l] -= 1;
+                        count_road[k - 1][l] -= 1; // up
+                        count_road[k + 1][l] -= 1; // down
+                        count_road[k][l - 1] -= 1; // left
+                        count_road[k][l + 1] -= 1; // right
+
+                        // Track dead end
+                        if count_road[k - 1][l] == 1 {
+                            k -= 1;
+                        } else if count_road[k + 1][l] == 1 {
+                            k += 1;
+                        } else if count_road[k][l - 1] == 1 {
+                            l -= 1;
+                        } else if count_road[k][l + 1] == 1 {
+                            l += 1;
+                        } else {
+                            break;
+                        }
+                    }
+                }
             }
         }
 
