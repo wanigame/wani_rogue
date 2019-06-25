@@ -29,18 +29,4 @@ Place these file on your server.
 ### Display
 You will see a randomly generated map in the browser console.
 
-    壁壁壁壁壁壁壁壁壁壁壁壁壁
-    壁　　　壁　　　　　　　壁
-    壁　壁壁壁　壁壁壁　壁　壁
-    壁　　　　　壁　壁　壁　壁
-    壁　壁壁壁壁壁　壁壁壁壁壁
-    壁　　　　　壁　壁　　　壁
-    壁壁壁　壁　壁　壁壁壁　壁
-    壁　壁　壁　　　壁　　　壁
-    壁　壁　壁壁壁壁壁壁壁　壁
-    壁　壁　　　　　　　　　壁
-    壁　壁　壁　壁　壁壁壁　壁
-    壁　　　壁　壁　　　壁　壁
-    壁壁壁壁壁壁壁壁壁壁壁壁壁
-
-
+![190626_1](https://user-images.githubusercontent.com/51026231/60119508-9c632d00-97b9-11e9-8491-b47ab14e0361.jpg)
