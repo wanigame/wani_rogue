@@ -33,7 +33,7 @@ pub fn random(range: Range<isize>) -> isize {
 /// Call point from Javascript.
 #[no_mangle]
 pub fn init() {
-    let rm = RandomMap::new(10, 10);
+    let rm = RandomMap::new(60, 30);
 
     for i in rm.map {
         let mut m = String::new();
@@ -41,6 +41,7 @@ pub fn init() {
             match j {
                 MapComponent::WALL => m += "\x1b[40m　",
                 MapComponent::NONE => m += "\x1b[46m　",
+                MapComponent::ROOM => m += "\x1b[42m　",
             }
         }
         m += "\x1b[0m";

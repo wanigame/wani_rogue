@@ -1,5 +1,5 @@
 //! Component of map.
-//! 
+//!
 //! Copyright (c) 2019 wanigame
 //!
 //! This source code is released under the MIT License
@@ -9,4 +9,5 @@
 pub enum MapComponent {
     NONE,
     WALL,
+    ROOM,
 }

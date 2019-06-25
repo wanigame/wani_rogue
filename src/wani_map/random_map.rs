@@ -24,7 +24,11 @@ impl RandomMap {
 
         let mut map = vec![vec![MapComponent::NONE; w]; h];
 
+        log("map_init");
         map = RandomMap::build_maze(map);
+        log("build_maze");
+        map = RandomMap::build_room(map);
+        log("build_rooom");
 
         RandomMap { map }
     }
@@ -125,9 +129,11 @@ impl RandomMap {
 
                                 continue 'post;
                             }
+                            _ => {}
                         }
                     }
                 }
+                _ => {}
             }
         }
 
@@ -161,6 +167,44 @@ impl RandomMap {
         }
 
         posts
+    }
+
+    /// Initialize step 2: Build room.
+    fn build_room(mut map: Map) -> Map {
+        let count_room = random(5..10);
+
+        for _ in 0..count_room {
+            let retry = random(5..7);
+
+            'retry: for _ in 0..retry {
+                let w = random(8..16) as usize / 2 * 2 + 1;
+                let h = random(8..16) as usize / 2 * 2 + 1;
+                let x = random(1..(map[0].len() - w - 1) as isize) as usize / 2 * 2 + 1;
+                let y = random(1..(map.len() - h - 1) as isize) as usize / 2 * 2 + 1;
+
+                // Check if the room is not already
+                for i in y..y + h {
+                    for j in x..x + w {
+                        match map[i][j] {
+                            MapComponent::ROOM => {
+                                continue 'retry;
+                            }
+                            _ => {}
+                        }
+                    }
+                }
+
+                // Build the room
+                for i in y..y + h {
+                    for j in x..x + w {
+                        map[i][j] = MapComponent::ROOM;
+                    }
+                }
+                break;
+            }
+        }
+
+        map
     }
 
     pub fn get_component(self, coord: &Vec2<isize>) -> MapComponent {
