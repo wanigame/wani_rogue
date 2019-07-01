@@ -13,6 +13,7 @@ Cargo.lock
 /www/*
 # Entry of wasm
 !/www/entry.js
+!/www/index.html
 
 # My favorite tools
 /tool
