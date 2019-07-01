@@ -10,11 +10,11 @@ Cargo.lock
 **/*.rs.bk
 
 # Web file
-/www/*
+/app/*
 # Entry of wasm
-!/www/entry.js
-!/www/index.html
-!/www/main.css
+!/app/scripts/
+!/app/index.html
+!/app/main.css
 
 # My favorite tools
 /tool
