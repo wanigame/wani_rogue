@@ -15,8 +15,6 @@ export class Painter {
     draw_rect(x, y, width, height, color) {
         this.context.fillStyle = color;
         this.context.fillRect(x, y, width, height);
-
-        console.log(color);
     }
 
     color(r, g, b, a = 0xff) {
