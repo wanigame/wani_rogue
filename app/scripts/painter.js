@@ -12,7 +12,7 @@ export class Painter {
         this.context = document.getElementById("main").getContext("2d");
     }
 
-    drawRect(x, y, width, height, color) {
+    draw_rect(x, y, width, height, color) {
         this.context.fillStyle = color;
         this.context.fillRect(x, y, width, height);
 
