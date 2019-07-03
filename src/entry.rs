@@ -7,7 +7,9 @@
 
 use std::ops::Range;
 
+use super::wani_core::color::Color;
 use super::wani_core::rect::Rect;
+
 use super::wani_map::map_component::MapComponent;
 use super::wani_map::random_map::RandomMap;
 
@@ -32,8 +34,12 @@ pub fn random(range: Range<isize>) -> isize {
     unsafe { js_random(range.end - range.start) + range.start }
 }
 
-pub fn draw_rect(rect: Rect, r: u8, g: u8, b: u8, a: u8) {
-    unsafe { js_draw_rect(rect.x, rect.y, rect.w, rect.h, r, g, b, a) }
+pub fn draw_rect(rect: Rect, color: Color) {
+    unsafe {
+        js_draw_rect(
+            rect.x, rect.y, rect.w, rect.h, color.r, color.g, color.b, color.a,
+        )
+    }
 }
 
 /// Call point from Javascript.
