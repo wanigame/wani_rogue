@@ -13,6 +13,7 @@ use super::wani_map::random_map::RandomMap;
 extern "C" {
     fn js_log(log: u32);
     fn js_random(max: isize) -> isize;
+    fn js_draw_rect(x: isize, y: isize, w: usize, h: usize, r: u8, g: u8, b: u8, a: u8);
 }
 
 /// Log message to console in web browser.
@@ -28,6 +29,10 @@ pub fn log(log: &str) {
 /// Generate random numbers from range.
 pub fn random(range: Range<isize>) -> isize {
     unsafe { js_random(range.end - range.start) + range.start }
+}
+
+pub fn draw_rect(x: isize, y: isize, w: usize, h: usize, r: u8, g: u8, b: u8, a: u8) {
+    unsafe { js_draw_rect(x, y, w, h, r, g, b, a) }
 }
 
 /// Call point from Javascript.

@@ -5,10 +5,13 @@
 // This source code is released under the MIT License
 // http://opensource.org/licenses/mit-license.php
 
+import { Painter } from "./painter.js";
 
 class Entry {
     exports;
     log = "";
+
+    painter = new Painter();
 
     imports = {
         env: {
@@ -20,7 +23,12 @@ class Entry {
                 }
                 else this.log += c;
             }.bind(this),
-            js_random: function (max) { return Math.floor(Math.random() * max); },
+            js_random: function (max) {
+                return Math.floor(Math.random() * max);
+            },
+            js_draw_rect: function (x, y, w, h, r, g, b, a) {
+                this.painter.draw_rect(x, y, w, h, this.painter.color(r, g, b, a));
+            }.bind(this),
         }
     }
 
