@@ -47,7 +47,7 @@ pub fn draw_rect(rect: Rect, color: Color) {
 pub fn init() {
     let rm = RandomMap::new(60, 30);
 
-    for i in rm.map {
+    for i in &rm.map {
         let mut m = String::new();
         for j in i {
             match j {
@@ -59,4 +59,6 @@ pub fn init() {
         m += "\x1b[0m";
         log(&m);
     }
+
+    rm.draw();
 }

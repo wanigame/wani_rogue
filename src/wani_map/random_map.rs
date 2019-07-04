@@ -6,6 +6,8 @@
 //! http://opensource.org/licenses/mit-license.php
 
 use super::super::entry::*;
+use super::super::wani_core::color::Color;
+use super::super::wani_core::rect::Rect;
 use super::super::wani_core::vector2::Vec2;
 
 use super::map_component::MapComponent;
@@ -283,10 +285,31 @@ impl RandomMap {
         map
     }
 
-    pub fn get_component(self, coord: &Vec2<isize>) -> MapComponent {
+    pub fn get_component(&self, coord: &Vec2<isize>) -> MapComponent {
         self.map[coord.y as usize][coord.x as usize]
     }
     fn _get_component(map: &Map, coord: &Vec2<isize>) -> MapComponent {
         map[coord.y as usize][coord.x as usize]
+    }
+
+    pub fn draw(&self) {
+        let mut rect = Rect::new(0, 0, 32, 32);
+        let mut color;
+        let x_slide = Vec2::new(32, 0);
+        let y_slide = Vec2::new(0, 32);
+
+        for i in &self.map {
+            for j in i {
+                match j {
+                    MapComponent::WALL => color = Color::new(0x5f, 0x5f, 0x5f, 0xff),
+                    MapComponent::NONE => color = Color::new(0xff, 0xff, 0xff, 0xff),
+                    MapComponent::ROOM => color = Color::new(0xff, 0xff, 0xff, 0xff),
+                }
+                draw_rect(rect, color);
+                rect.slide(&x_slide);
+            }
+            rect.x = 0;
+            rect.slide(&y_slide);
+        }
     }
 }
