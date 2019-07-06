@@ -5,6 +5,7 @@
 // This source code is released under the MIT License
 // http://opensource.org/licenses/mit-license.php
 
+import { Input } from "./input.js";
 import { Painter } from "./painter.js";
 
 class Entry {
@@ -43,4 +44,7 @@ class Entry {
     }
 }
 
-new Entry();
+window.onload = () => {
+    const entry = new Entry();
+    new Input(entry);
+};

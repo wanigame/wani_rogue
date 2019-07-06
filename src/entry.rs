@@ -62,3 +62,13 @@ pub fn init() {
 
     rm.draw();
 }
+
+#[no_mangle]
+pub fn key_down(key_code: usize) {
+    log(&("key_down: ".to_string() + &key_code.to_string()));
+}
+
+#[no_mangle]
+pub fn key_up(key_code: usize) {
+    log(&("key_up  : ".to_string() + &key_code.to_string()));
+}
