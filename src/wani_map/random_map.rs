@@ -9,6 +9,7 @@ use crate::entry::*;
 use crate::wani_core::color::Color;
 use crate::wani_core::rect::Rect;
 use crate::wani_core::vector2::Vec2;
+use crate::wani_trait::drawer::Drawer;
 
 use crate::wani_map::map_component::MapComponent;
 
@@ -291,8 +292,10 @@ impl RandomMap {
     fn _get_component(map: &Map, coord: &Vec2<isize>) -> MapComponent {
         map[coord.y as usize][coord.x as usize]
     }
+}
 
-    pub fn draw(&self) {
+impl Drawer for RandomMap {
+    fn draw(&self) {
         let mut rect = Rect::new(0, 0, 32, 32);
         let mut color;
         let x_slide = Vec2::new(32, 0);

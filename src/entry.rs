@@ -13,6 +13,8 @@ use crate::wani_core::rect::Rect;
 use crate::wani_map::map_component::MapComponent;
 use crate::wani_map::random_map::RandomMap;
 
+use crate::wani_trait::drawer::Drawer;
+
 extern "C" {
     fn js_log(log: u32);
     fn js_random(max: isize) -> isize;
