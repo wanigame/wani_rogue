@@ -11,6 +11,9 @@ pub mod wani_core;
 pub mod wani_map;
 pub mod wani_trait;
 
+#[macro_use]
+extern crate lazy_static;
+
 #[cfg(test)]
 mod tests {
     #[test]
