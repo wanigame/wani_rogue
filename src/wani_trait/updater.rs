@@ -1,9 +1,10 @@
-//! Module for trait.
+//! Trait of update regularly
 //!
 //! Copyright (c) 2019 wanigame
 //!
 //! This source code is released under the MIT License
 //! http://opensource.org/licenses/mit-license.php
 
-pub mod drawer;
-pub mod updater;
+pub trait Updater {
+    fn update(&mut self);
+}
