@@ -8,6 +8,7 @@
 pub mod entry;
 pub mod wani_core;
 pub mod wani_map;
+pub mod wani_trait;
 
 #[cfg(test)]
 mod tests {
