@@ -7,11 +7,11 @@
 
 use std::ops::Range;
 
-use super::wani_core::color::Color;
-use super::wani_core::rect::Rect;
+use crate::wani_core::color::Color;
+use crate::wani_core::rect::Rect;
 
-use super::wani_map::map_component::MapComponent;
-use super::wani_map::random_map::RandomMap;
+use crate::wani_map::map_component::MapComponent;
+use crate::wani_map::random_map::RandomMap;
 
 extern "C" {
     fn js_log(log: u32);

@@ -5,7 +5,7 @@
 //! This source code is released under the MIT License
 //! http://opensource.org/licenses/mit-license.php
 
-use super::vector2::Vec2;
+use crate::wani_core::vector2::Vec2;
 
 #[derive(Clone, Copy)]
 pub struct Rect {

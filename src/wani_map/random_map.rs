@@ -5,12 +5,12 @@
 //! This source code is released under the MIT License
 //! http://opensource.org/licenses/mit-license.php
 
-use super::super::entry::*;
-use super::super::wani_core::color::Color;
-use super::super::wani_core::rect::Rect;
-use super::super::wani_core::vector2::Vec2;
+use crate::entry::*;
+use crate::wani_core::color::Color;
+use crate::wani_core::rect::Rect;
+use crate::wani_core::vector2::Vec2;
 
-use super::map_component::MapComponent;
+use crate::wani_map::map_component::MapComponent;
 
 type Map = Vec<Vec<MapComponent>>;
 
