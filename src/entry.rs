@@ -7,12 +7,16 @@
 
 use std::ops::Range;
 
+use super::wani_core::color::Color;
+use super::wani_core::rect::Rect;
+
 use super::wani_map::map_component::MapComponent;
 use super::wani_map::random_map::RandomMap;
 
 extern "C" {
     fn js_log(log: u32);
     fn js_random(max: isize) -> isize;
+    fn js_draw_rect(x: isize, y: isize, w: usize, h: usize, r: u8, g: u8, b: u8, a: u8);
 }
 
 /// Log message to console in web browser.
@@ -30,12 +34,20 @@ pub fn random(range: Range<isize>) -> isize {
     unsafe { js_random(range.end - range.start) + range.start }
 }
 
+pub fn draw_rect(rect: Rect, color: Color) {
+    unsafe {
+        js_draw_rect(
+            rect.x, rect.y, rect.w, rect.h, color.r, color.g, color.b, color.a,
+        )
+    }
+}
+
 /// Call point from Javascript.
 #[no_mangle]
 pub fn init() {
     let rm = RandomMap::new(60, 30);
 
-    for i in rm.map {
+    for i in &rm.map {
         let mut m = String::new();
         for j in i {
             match j {
@@ -47,4 +59,6 @@ pub fn init() {
         m += "\x1b[0m";
         log(&m);
     }
+
+    rm.draw();
 }
