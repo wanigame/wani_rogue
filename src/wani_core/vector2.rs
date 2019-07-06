@@ -1,12 +1,12 @@
 //! Struct of Vector.
-//! 
+//!
 //! Copyright (c) 2019 wanigame
 //!
 //! This source code is released under the MIT License
 //! http://opensource.org/licenses/mit-license.php
 
 use std::cmp::PartialEq;
-use std::ops::{Add, Mul, Sub};
+use std::ops::{Add, AddAssign, Mul, Sub, SubAssign};
 
 #[derive(Clone, Copy)]
 pub struct Vec2<T> {
@@ -58,6 +58,16 @@ where
    }
 }
 
+impl<T> AddAssign for Vec2<T>
+where
+   T: AddAssign,
+{
+   fn add_assign(&mut self, rhs: Self) {
+      self.x += rhs.x;
+      self.y += rhs.y;
+   }
+}
+
 impl<T> Mul<T> for Vec2<T>
 where
    T: Mul<Output = T> + Copy,
@@ -83,5 +93,15 @@ where
          x: self.x - other.x,
          y: self.y - other.y,
       }
+   }
+}
+
+impl<T> SubAssign for Vec2<T>
+where
+   T: SubAssign,
+{
+   fn sub_assign(&mut self, rhs: Self) {
+      self.x -= rhs.x;
+      self.y -= rhs.y;
    }
 }
