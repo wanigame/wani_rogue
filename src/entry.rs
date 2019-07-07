@@ -8,14 +8,11 @@
 use std::ops::Range;
 use std::sync::Mutex;
 
-use crate::wani_character::hero::Hero;
 use crate::wani_core::color::Color;
-use crate::wani_core::input_manager::INPUT_MANAGER;
 use crate::wani_core::rect::Rect;
-use crate::wani_core::vector2::Vec2;
-use crate::wani_map::map_component::MapComponent;
-use crate::wani_map::random_map::RandomMap;
-use crate::wani_trait::game_object::GOM;
+
+use crate::game_manager::GAME_MANAGER;
+use crate::wani_core::input_manager::INPUT_MANAGER;
 
 extern "C" {
     fn js_log(log: u32);
@@ -54,26 +51,6 @@ lazy_static! {
 #[no_mangle]
 pub fn init(width: usize, height: usize) {
     *SCREEN_SIZE.lock().unwrap() = Rect::new(0, 0, width, height);
-
-    let he = Hero::new(Vec2::new(0, 0));
-    GOM.lock().unwrap().regist(he);
-
-    let rm = RandomMap::new(60, 30);
-
-    for i in &rm.map {
-        let mut m = String::new();
-        for j in i {
-            match j {
-                MapComponent::WALL => m += "\x1b[40m　",
-                MapComponent::NONE => m += "\x1b[46m　",
-                MapComponent::ROOM => m += "\x1b[42m　",
-            }
-        }
-        m += "\x1b[0m";
-        log(&m);
-    }
-
-    // rm.draw();
 }
 
 #[no_mangle]
@@ -88,10 +65,10 @@ pub fn key_up(key_code: usize) {
 
 #[no_mangle]
 pub fn update() {
-    GOM.lock().unwrap().update();
+    GAME_MANAGER.lock().unwrap().update();
 }
 
 #[no_mangle]
 pub fn draw() {
-    GOM.lock().unwrap().draw();
+    GAME_MANAGER.lock().unwrap().draw();
 }

@@ -66,7 +66,7 @@ impl Updater for Hero {
 
 impl Drawer for Hero {
     fn draw(&self) {
-        let pos = self.position + self.offset;
+        let pos = self.position + *DRAW_OFFSET.lock().unwrap();
         draw_rect(
             Rect::new(pos.x, pos.y, 32, 32),
             Color::new(0x00, 0x00, 0xff, 0xff),

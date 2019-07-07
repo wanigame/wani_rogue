@@ -5,32 +5,45 @@
 //! This source code is released under the MIT License
 //! http://opensource.org/licenses/mit-license.php
 
+use std::sync::Mutex;
+
+use crate::game_object_manager::GameObjectManager;
 use crate::wani_character::hero::Hero;
 use crate::wani_core::camera::Camera;
-use crate::wani_core::vector2::Vec2;
 use crate::wani_map::random_map::RandomMap;
 use crate::wani_trait::drawer::Drawer;
-use crate::wani_trait::game_object::GameObject;
-use crate::wani_trait::game_object::GOM;
 use crate::wani_trait::updater::Updater;
 
-pub struct GameManager {
+lazy_static! {
+    pub static ref GAME_MANAGER: Mutex<GameManager<'static>> = Mutex::new(GameManager::new());
+}
+
+pub struct GameManager<'a> {
+    gom: GameObjectManager<'a>,
+
     main_camera: Camera,
+
     hero: Hero,
     map: RandomMap,
 }
 
-impl GameManager {
+impl<'a> GameManager<'a> {
     pub fn new() -> Self {
         GameManager {
+            gom: GameObjectManager::new(),
+
             main_camera: Camera::new(),
-            hero: Hero::new(Vec2::new(0, 0)),
-            map: RandomMap::new(50, 50),
+
+            hero: Hero::new(),
+            map: RandomMap::new(80, 50),
         }
     }
 
     pub fn update(&mut self) {
-        GOM.lock().unwrap().update();
+        self.gom.update();
+
+        self.map.update();
+        self.hero.update();
 
         // move camera offset
         self.main_camera.offset = self.hero.get_offset();
@@ -38,6 +51,9 @@ impl GameManager {
     }
 
     pub fn draw(&self) {
-        GOM.lock().unwrap().draw();
+        self.gom.draw();
+
+        self.map.draw();
+        self.hero.draw();
     }
 }
