@@ -7,6 +7,7 @@
 
 pub mod entry;
 pub mod game_manager;
+pub mod game_object_manager;
 pub mod wani_character;
 pub mod wani_core;
 pub mod wani_map;
