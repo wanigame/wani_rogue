@@ -6,4 +6,5 @@
 //! http://opensource.org/licenses/mit-license.php
 
 pub mod drawer;
+pub mod game_object;
 pub mod updater;
