@@ -22,9 +22,9 @@ pub struct Hero {
 }
 
 impl Hero {
-    pub fn new(position: Vec2<isize>) -> Self {
+    pub fn new() -> Self {
         Hero {
-            position,
+            position: Vec2::new(0, 0),
             offset: Vec2::new(0, 0),
         }
     }
