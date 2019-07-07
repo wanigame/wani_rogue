@@ -30,7 +30,7 @@ impl Hero {
         self.position.y = (self.position.y as isize + direction.y) as usize;
     }
 
-    pub fn getPosition(&self) -> Vec2<usize> {
+    pub fn get_position(&self) -> Vec2<usize> {
         self.position
     }
 }
