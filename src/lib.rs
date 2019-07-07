@@ -6,6 +6,7 @@
 //! http://opensource.org/licenses/mit-license.php
 
 pub mod entry;
+pub mod game_manager;
 pub mod wani_character;
 pub mod wani_core;
 pub mod wani_map;
