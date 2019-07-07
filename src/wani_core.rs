@@ -6,5 +6,6 @@
 //! http://opensource.org/licenses/mit-license.php
 
 pub mod color;
+pub mod input_manager;
 pub mod rect;
 pub mod vector2;

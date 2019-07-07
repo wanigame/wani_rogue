@@ -8,6 +8,7 @@
 use std::ops::Range;
 
 use crate::wani_core::color::Color;
+use crate::wani_core::input_manager::INPUT_MANAGER;
 use crate::wani_core::rect::Rect;
 
 use crate::wani_map::map_component::MapComponent;
@@ -67,10 +68,10 @@ pub fn init() {
 
 #[no_mangle]
 pub fn key_down(key_code: usize) {
-    log(&("key_down: ".to_string() + &key_code.to_string()));
+    INPUT_MANAGER.lock().unwrap().key_down(key_code);
 }
 
 #[no_mangle]
 pub fn key_up(key_code: usize) {
-    log(&("key_up  : ".to_string() + &key_code.to_string()));
+    INPUT_MANAGER.lock().unwrap().key_up(key_code);
 }
