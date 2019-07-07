@@ -36,6 +36,10 @@ impl Hero {
     pub fn get_position(&self) -> Vec2<isize> {
         self.position
     }
+
+    pub fn get_offset(&self) -> Vec2<isize> {
+        self.offset
+    }
 }
 
 impl Updater for Hero {
