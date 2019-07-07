@@ -24,4 +24,11 @@ impl Rect {
       self.x += vec.x;
       self.y += vec.y;
    }
+
+   pub fn center(&self) -> Vec2<isize> {
+      Vec2 {
+         x: (self.x + self.w as isize) / 2,
+         y: (self.y + self.h as isize) / 2,
+      }
+   }
 }
