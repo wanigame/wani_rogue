@@ -18,11 +18,15 @@ use crate::wani_trait::updater::Updater;
 
 pub struct Hero {
     position: Vec2<isize>,
+    offset: Vec2<isize>,
 }
 
 impl Hero {
-        Hero { position }
     pub fn new(position: Vec2<isize>) -> Self {
+        Hero {
+            position,
+            offset: Vec2::new(0, 0),
+        }
     }
 
     fn r#move(&mut self, direction: Vec2<isize>) {
@@ -49,13 +53,17 @@ impl Updater for Hero {
         if im.get_key(InputKey::RIGHT) {
             self.r#move(Vec2::new(1, 0) * 32);
         }
+
+        // calculate offset
+        self.offset = SCREEN_SIZE.lock().unwrap().center() - Vec2::new(16, 16) - self.position;
     }
 }
 
 impl Drawer for Hero {
     fn draw(&self) {
+        let pos = self.position + self.offset;
         draw_rect(
-            Rect::new(self.position.x, self.position.y, 32, 32),
+            Rect::new(pos.x, pos.y, 32, 32),
             Color::new(0x00, 0x00, 0xff, 0xff),
         );
     }

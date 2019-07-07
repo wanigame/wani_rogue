@@ -47,7 +47,7 @@ pub fn draw_rect(rect: Rect, color: Color) {
 }
 
 lazy_static! {
-    static ref SCREEN_SIZE: Mutex<Rect> = Mutex::new(Rect::new(0, 0, 0, 0));
+    pub static ref SCREEN_SIZE: Mutex<Rect> = Mutex::new(Rect::new(0, 0, 0, 0));
 }
 
 /// Call point from Javascript.
