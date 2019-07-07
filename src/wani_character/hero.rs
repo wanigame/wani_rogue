@@ -17,20 +17,19 @@ use crate::wani_trait::game_object::GameObject;
 use crate::wani_trait::updater::Updater;
 
 pub struct Hero {
-    position: Vec2<usize>,
+    position: Vec2<isize>,
 }
 
 impl Hero {
-    pub fn new(position: Vec2<usize>) -> Self {
         Hero { position }
+    pub fn new(position: Vec2<isize>) -> Self {
     }
 
     fn r#move(&mut self, direction: Vec2<isize>) {
-        self.position.x = (self.position.x as isize + direction.x) as usize;
-        self.position.y = (self.position.y as isize + direction.y) as usize;
+        self.position += direction;
     }
 
-    pub fn get_position(&self) -> Vec2<usize> {
+    pub fn get_position(&self) -> Vec2<isize> {
         self.position
     }
 }
@@ -56,7 +55,7 @@ impl Updater for Hero {
 impl Drawer for Hero {
     fn draw(&self) {
         draw_rect(
-            Rect::new(self.position.x as isize, self.position.y as isize, 32, 32),
+            Rect::new(self.position.x, self.position.y, 32, 32),
             Color::new(0x00, 0x00, 0xff, 0xff),
         );
     }
