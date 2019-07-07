@@ -7,14 +7,14 @@
 
 use std::ops::Range;
 
+use crate::wani_character::hero::Hero;
 use crate::wani_core::color::Color;
 use crate::wani_core::input_manager::INPUT_MANAGER;
 use crate::wani_core::rect::Rect;
-
+use crate::wani_core::vector2::Vec2;
 use crate::wani_map::map_component::MapComponent;
 use crate::wani_map::random_map::RandomMap;
-
-use crate::wani_trait::drawer::Drawer;
+use crate::wani_trait::game_object::GOM;
 
 extern "C" {
     fn js_log(log: u32);
@@ -48,6 +48,9 @@ pub fn draw_rect(rect: Rect, color: Color) {
 /// Call point from Javascript.
 #[no_mangle]
 pub fn init() {
+    let he = Hero::new(Vec2::new(0, 0));
+    GOM.lock().unwrap().regist(he);
+
     let rm = RandomMap::new(60, 30);
 
     for i in &rm.map {
@@ -63,7 +66,7 @@ pub fn init() {
         log(&m);
     }
 
-    rm.draw();
+    // rm.draw();
 }
 
 #[no_mangle]
@@ -74,4 +77,14 @@ pub fn key_down(key_code: usize) {
 #[no_mangle]
 pub fn key_up(key_code: usize) {
     INPUT_MANAGER.lock().unwrap().key_up(key_code);
+}
+
+#[no_mangle]
+pub fn update() {
+    GOM.lock().unwrap().update();
+}
+
+#[no_mangle]
+pub fn draw() {
+    GOM.lock().unwrap().draw();
 }

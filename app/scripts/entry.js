@@ -40,6 +40,12 @@ class Entry {
             .then((results) => {
                 this.exports = results.instance.exports;
                 this.exports.init();
+
+                setInterval(() => {
+                    this.exports.update();
+                    this.painter.clear_rect();
+                    this.exports.draw();
+                }, 20); // 50FPS
             });
     }
 }
