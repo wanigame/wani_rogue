@@ -5,42 +5,36 @@
 //! This source code is released under the MIT License
 //! http://opensource.org/licenses/mit-license.php
 
-use std::sync::Mutex;
-
 use crate::wani_trait::drawer::Drawer;
 use crate::wani_trait::updater::Updater;
 
-lazy_static! {
-    pub static ref GOM: Mutex<GameObjectManager> = Mutex::new(GameObjectManager::new());
-}
-
 pub trait GameObject: Drawer + Updater + Send {}
 
-pub struct GameObjectManager {
-    list: Vec<Mutex<Box<GameObject>>>,
+pub struct GameObjectManager<'a> {
+    list: Vec<&'a mut GameObject>,
 }
 
-impl GameObjectManager {
+impl<'a> GameObjectManager<'a> {
     pub fn new() -> Self {
         GameObjectManager { list: Vec::new() }
     }
 
-    pub fn regist<T>(&mut self, game_object: T)
+    pub fn regist<T>(&mut self, game_object: &'a mut T)
     where
-        T: GameObject + 'static,
+        T: GameObject,
     {
-        self.list.push(Mutex::new(Box::new(game_object)));
+        self.list.push(game_object);
     }
 
     pub fn update(&mut self) {
-        for u in &self.list {
-            u.lock().unwrap().update();
+        for u in &mut self.list {
+            u.update();
         }
     }
 
     pub fn draw(&self) {
         for d in &self.list {
-            d.lock().unwrap().draw();
+            d.draw();
         }
     }
 }
