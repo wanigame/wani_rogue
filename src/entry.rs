@@ -6,6 +6,7 @@
 //! http://opensource.org/licenses/mit-license.php
 
 use std::ops::Range;
+use std::sync::Mutex;
 
 use crate::wani_character::hero::Hero;
 use crate::wani_core::color::Color;
@@ -45,9 +46,15 @@ pub fn draw_rect(rect: Rect, color: Color) {
     }
 }
 
+lazy_static! {
+    static ref SCREEN_SIZE: Mutex<Rect> = Mutex::new(Rect::new(0, 0, 0, 0));
+}
+
 /// Call point from Javascript.
 #[no_mangle]
-pub fn init() {
+pub fn init(width: usize, height: usize) {
+    *SCREEN_SIZE.lock().unwrap() = Rect::new(0, 0, width, height);
+
     let he = Hero::new(Vec2::new(0, 0));
     GOM.lock().unwrap().regist(he);
 

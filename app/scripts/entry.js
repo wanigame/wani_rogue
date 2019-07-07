@@ -39,7 +39,7 @@ class Entry {
             .then((bytes) => WebAssembly.instantiate(bytes, this.imports))
             .then((results) => {
                 this.exports = results.instance.exports;
-                this.exports.init();
+                this.exports.init(this.painter.canvas.width, this.painter.canvas.height);
 
                 setInterval(() => {
                     this.exports.update();
