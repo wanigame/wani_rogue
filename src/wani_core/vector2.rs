@@ -6,7 +6,7 @@
 //! http://opensource.org/licenses/mit-license.php
 
 use std::cmp::PartialEq;
-use std::ops::{Add, AddAssign, Mul, Sub, SubAssign};
+use std::ops::{Add, AddAssign, Div, Mul, Sub, SubAssign};
 
 #[derive(Clone, Copy)]
 pub struct Vec2<T> {
@@ -65,6 +65,20 @@ where
    fn add_assign(&mut self, rhs: Self) {
       self.x += rhs.x;
       self.y += rhs.y;
+   }
+}
+
+impl<T> Div<T> for Vec2<T>
+where
+   T: Div<Output = T> + Copy,
+{
+   type Output = Self;
+
+   fn div(self, rhs: T) -> Self {
+      Vec2 {
+         x: self.x / rhs,
+         y: self.y / rhs,
+      }
    }
 }
 
