@@ -34,6 +34,7 @@ impl GameManager {
 
         // move camera offset
         self.main_camera.offset = self.hero.get_offset();
+        self.main_camera.set();
     }
 
     pub fn draw(&self) {

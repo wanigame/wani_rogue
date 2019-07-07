@@ -6,10 +6,13 @@
 //! http://opensource.org/licenses/mit-license.php
 
 use crate::entry::*;
+use crate::wani_core::camera::DRAW_OFFSET;
 use crate::wani_core::color::Color;
 use crate::wani_core::rect::Rect;
 use crate::wani_core::vector2::Vec2;
 use crate::wani_trait::drawer::Drawer;
+use crate::wani_trait::game_object::GameObject;
+use crate::wani_trait::updater::Updater;
 
 use crate::wani_map::map_component::MapComponent;
 
@@ -294,9 +297,15 @@ impl RandomMap {
     }
 }
 
+impl Updater for RandomMap {
+    fn update(&mut self) {}
+}
+
 impl Drawer for RandomMap {
     fn draw(&self) {
-        let mut rect = Rect::new(0, 0, 32, 32);
+        let os = *DRAW_OFFSET.lock().unwrap();
+
+        let mut rect = Rect::new(os.x, os.y, 32, 32);
         let mut color;
         let x_slide = Vec2::new(32, 0);
         let y_slide = Vec2::new(0, 32);
@@ -311,8 +320,10 @@ impl Drawer for RandomMap {
                 draw_rect(rect, color);
                 rect.slide(&x_slide);
             }
-            rect.x = 0;
+            rect.x = os.x;
             rect.slide(&y_slide);
         }
     }
 }
+
+impl GameObject for RandomMap {}

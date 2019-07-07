@@ -7,6 +7,7 @@
 
 use crate::entry::*;
 
+use crate::wani_core::camera::DRAW_OFFSET;
 use crate::wani_core::color::Color;
 use crate::wani_core::input_manager::InputKey;
 use crate::wani_core::input_manager::INPUT_MANAGER;
