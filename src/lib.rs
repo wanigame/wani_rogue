@@ -6,8 +6,15 @@
 //! http://opensource.org/licenses/mit-license.php
 
 pub mod entry;
+pub mod game_manager;
+pub mod game_object_manager;
+pub mod wani_character;
 pub mod wani_core;
 pub mod wani_map;
+pub mod wani_trait;
+
+#[macro_use]
+extern crate lazy_static;
 
 #[cfg(test)]
 mod tests {

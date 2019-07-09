@@ -5,6 +5,7 @@
 // This source code is released under the MIT License
 // http://opensource.org/licenses/mit-license.php
 
+import { Input } from "./input.js";
 import { Painter } from "./painter.js";
 
 class Entry {
@@ -38,9 +39,18 @@ class Entry {
             .then((bytes) => WebAssembly.instantiate(bytes, this.imports))
             .then((results) => {
                 this.exports = results.instance.exports;
-                this.exports.init();
+                this.exports.init(this.painter.canvas.width, this.painter.canvas.height);
+
+                setInterval(() => {
+                    this.exports.update();
+                    this.painter.clear_rect();
+                    this.exports.draw();
+                }, 20); // 50FPS
             });
     }
 }
 
-new Entry();
+window.onload = () => {
+    const entry = new Entry();
+    new Input(entry);
+};
