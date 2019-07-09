@@ -25,8 +25,7 @@ Place these file on your server.
 
 ## Example
 [https://wanigame.com/rogue/](https://wanigame.com/rogue/)
+You can see a randomly generated map and operate "WASD" or cursor key.
 
 ### Display
-You will see a randomly generated map in the browser console.
-
-![190626_1](https://user-images.githubusercontent.com/51026231/60119508-9c632d00-97b9-11e9-8491-b47ab14e0361.jpg)
+![screenshot](https://user-images.githubusercontent.com/51026231/60900085-946db780-a2a6-11e9-9f32-70f6044ea16f.gif)
