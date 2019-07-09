@@ -5,10 +5,18 @@
 //! This source code is released under the MIT License
 //! http://opensource.org/licenses/mit-license.php
 
-use super::super::entry::*;
-use super::super::wani_core::vector2::Vec2;
+use std::any::Any;
 
-use super::map_component::MapComponent;
+use crate::entry::*;
+use crate::game_manager::GameManager;
+use crate::wani_core::camera::DRAW_OFFSET;
+use crate::wani_core::color::Color;
+use crate::wani_core::rect::Rect;
+use crate::wani_core::vector2::Vec2;
+use crate::wani_map::map_component::MapComponent;
+use crate::wani_trait::drawer::Drawer;
+use crate::wani_trait::game_object::GameObject;
+use crate::wani_trait::updater::Updater;
 
 type Map = Vec<Vec<MapComponent>>;
 
@@ -283,10 +291,65 @@ impl RandomMap {
         map
     }
 
-    pub fn get_component(self, coord: &Vec2<isize>) -> MapComponent {
-        self.map[coord.y as usize][coord.x as usize]
+    pub fn get_component(&self, coord: &Vec2<isize>) -> Option<MapComponent> {
+        let mut comp = None;
+        if Rect::new(0, 0, self.map[0].len() - 1, self.map.len() - 1).contains(coord) {
+            comp = Some(self.map[coord.y as usize][coord.x as usize])
+        }
+        comp
     }
     fn _get_component(map: &Map, coord: &Vec2<isize>) -> MapComponent {
         map[coord.y as usize][coord.x as usize]
+    }
+
+    pub fn respawnable_coord(&self) -> Vec2<isize> {
+        let w = self.map[0].len();
+        let h = self.map.len();
+        loop {
+            let rand_pos = Vec2::new(random(0..w as isize), random(0..h as isize));
+            match RandomMap::_get_component(&self.map, &rand_pos) {
+                MapComponent::ROOM => return rand_pos * 32,
+                _ => {}
+            }
+        }
+    }
+}
+
+impl Updater for RandomMap {
+    fn update(&mut self, _gm: &GameManager) {}
+}
+
+impl Drawer for RandomMap {
+    fn draw(&self) {
+        let os = *DRAW_OFFSET.lock().unwrap();
+
+        let mut rect = Rect::new(os.x, os.y, 32, 32);
+        let mut color;
+        let x_slide = Vec2::new(32, 0);
+        let y_slide = Vec2::new(0, 32);
+
+        for i in &self.map {
+            for j in i {
+                match j {
+                    MapComponent::WALL => color = Color::new(0x5f, 0x5f, 0x5f, 0xff),
+                    MapComponent::NONE => color = Color::new(0xff, 0xff, 0xff, 0xff),
+                    MapComponent::ROOM => color = Color::new(0xff, 0xff, 0xff, 0xff),
+                }
+                draw_rect(rect, color);
+                rect.slide(&x_slide);
+            }
+            rect.x = os.x;
+            rect.slide(&y_slide);
+        }
+    }
+}
+
+impl GameObject for RandomMap {
+    fn get_position(&self) -> Vec2<isize> {
+        Vec2::new(0, 0)
+    }
+
+    fn as_any(&self) -> &Any {
+        self
     }
 }
