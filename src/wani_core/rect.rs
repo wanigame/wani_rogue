@@ -20,6 +20,19 @@ impl Rect {
       Rect { x, y, w, h }
    }
 
+   pub fn left(&self) -> isize {
+      self.x
+   }
+   pub fn right(&self) -> isize {
+      self.x + self.w as isize
+   }
+   pub fn top(&self) -> isize {
+      self.y
+   }
+   pub fn bottom(&self) -> isize {
+      self.y + self.h as isize
+   }
+
    pub fn slide(&mut self, vec: &Vec2<isize>) {
       self.x += vec.x;
       self.y += vec.y;
@@ -30,5 +43,12 @@ impl Rect {
          x: (self.x + self.w as isize) / 2,
          y: (self.y + self.h as isize) / 2,
       }
+   }
+
+   pub fn contains(&self, point: &Vec2<isize>) -> bool {
+      self.left() <= point.x
+         && point.x <= self.right()
+         && self.top() <= point.y
+         && point.y <= self.bottom()
    }
 }

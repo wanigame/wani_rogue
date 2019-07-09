@@ -5,28 +5,31 @@
 //! This source code is released under the MIT License
 //! http://opensource.org/licenses/mit-license.php
 
+use std::any::Any;
+
 use crate::entry::*;
 
+use crate::game_manager::GameManager;
 use crate::wani_core::camera::DRAW_OFFSET;
 use crate::wani_core::color::Color;
 use crate::wani_core::input_manager::InputKey;
 use crate::wani_core::input_manager::INPUT_MANAGER;
 use crate::wani_core::rect::Rect;
 use crate::wani_core::vector2::Vec2;
+use crate::wani_map::map_component::MapComponent;
+use crate::wani_map::random_map::RandomMap;
 use crate::wani_trait::drawer::Drawer;
 use crate::wani_trait::game_object::GameObject;
 use crate::wani_trait::updater::Updater;
 
 pub struct Hero {
     position: Vec2<isize>,
-    offset: Vec2<isize>,
 }
 
 impl Hero {
     pub fn new() -> Self {
         Hero {
             position: Vec2::new(0, 0),
-            offset: Vec2::new(0, 0),
         }
     }
 
@@ -34,33 +37,52 @@ impl Hero {
         self.position += direction;
     }
 
-    pub fn get_position(&self) -> Vec2<isize> {
-        self.position
-    }
-
-    pub fn get_offset(&self) -> Vec2<isize> {
-        self.offset
+    pub fn teleport(&mut self, coord: &Vec2<isize>) {
+        self.position = *coord;
     }
 }
 
 impl Updater for Hero {
-    fn update(&mut self) {
+    fn update(&mut self, gm: &GameManager) {
         let im = INPUT_MANAGER.lock().unwrap();
+        let mut dir = Vec2::new(0, 0);
         if im.get_key(InputKey::UP) {
-            self.r#move(Vec2::new(0, -1) * 32);
+            dir += Vec2::new(0, -1) * 32;
         }
         if im.get_key(InputKey::DOWN) {
-            self.r#move(Vec2::new(0, 1) * 32);
+            dir += Vec2::new(0, 1) * 32;
         }
         if im.get_key(InputKey::LEFT) {
-            self.r#move(Vec2::new(-1, 0) * 32);
+            dir += Vec2::new(-1, 0) * 32;
         }
         if im.get_key(InputKey::RIGHT) {
-            self.r#move(Vec2::new(1, 0) * 32);
+            dir += Vec2::new(1, 0) * 32;
         }
 
-        // calculate offset
-        self.offset = SCREEN_SIZE.lock().unwrap().center() - Vec2::new(16, 16) - self.position;
+        let rmap = gm.get_map().lock().unwrap();
+        let map = rmap.as_any().downcast_ref::<RandomMap>().unwrap();
+
+        let mut _dir;
+        _dir = Vec2::new(dir.x, 0);
+        match map.get_component(&((self.position + _dir) / 32)) {
+            Some(comp) => match comp {
+                MapComponent::WALL => {}
+                _ => {
+                    self.r#move(_dir);
+                }
+            },
+            None => {}
+        }
+        _dir = Vec2::new(0, dir.y);
+        match map.get_component(&((self.position + _dir) / 32)) {
+            Some(comp) => match comp {
+                MapComponent::WALL => {}
+                _ => {
+                    self.r#move(_dir);
+                }
+            },
+            None => {}
+        }
     }
 }
 
@@ -74,4 +96,12 @@ impl Drawer for Hero {
     }
 }
 
-impl GameObject for Hero {}
+impl GameObject for Hero {
+    fn get_position(&self) -> Vec2<isize> {
+        self.position
+    }
+
+    fn as_any(&self) -> &Any {
+        self
+    }
+}
