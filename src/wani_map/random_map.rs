@@ -316,7 +316,7 @@ impl RandomMap {
 }
 
 impl Updater for RandomMap {
-    fn update(&mut self, gm: &GameManager) {}
+    fn update(&mut self, _gm: &GameManager) {}
 }
 
 impl Drawer for RandomMap {
