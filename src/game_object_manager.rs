@@ -41,14 +41,14 @@ impl GameObjectManager {
     }
 
     pub fn update(&self, gm: &GameManager) {
-        for u in &self.list {
-            u.1.lock().unwrap().update(gm);
+        for (_, obj) in &self.list {
+            obj.lock().unwrap().update(gm);
         }
     }
 
     pub fn draw(&self) {
-        for d in &self.list {
-            d.1.lock().unwrap().draw();
+        for (_, obj) in &self.list {
+            obj.lock().unwrap().draw();
         }
     }
 }
