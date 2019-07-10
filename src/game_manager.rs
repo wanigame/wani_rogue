@@ -65,9 +65,9 @@ impl GameManager {
     }
 
     pub fn get_hero(&self) -> &Mutex<Box<GameObject>> {
-        self.gom.get_game_object(self.id_hero).unwrap()
+        self.gom.get_game_object(self.id_hero)
     }
     pub fn get_map(&self) -> &Mutex<Box<GameObject>> {
-        self.gom.get_game_object(self.id_map).unwrap()
+        self.gom.get_game_object(self.id_map)
     }
 }

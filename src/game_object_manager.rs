@@ -5,6 +5,7 @@
 //! This source code is released under the MIT License
 //! http://opensource.org/licenses/mit-license.php
 
+use std::collections::HashMap;
 use std::sync::Mutex;
 
 use crate::game_manager::GameManager;
@@ -15,12 +16,14 @@ lazy_static! {
 }
 
 pub struct GameObjectManager {
-    list: Vec<(usize, Mutex<Box<GameObject>>)>,
+    list: HashMap<usize, Mutex<Box<GameObject>>>,
 }
 
 impl GameObjectManager {
     pub fn new() -> Self {
-        GameObjectManager { list: Vec::new() }
+        GameObjectManager {
+            list: HashMap::new(),
+        }
     }
 
     pub fn regist<T>(&mut self, game_object: T) -> usize
@@ -29,15 +32,12 @@ impl GameObjectManager {
     {
         let mut id = GAME_OBJECT_ID.lock().unwrap();
         *id += 1;
-        self.list.push((*id, Mutex::new(Box::new(game_object))));
+        self.list.insert(*id, Mutex::new(Box::new(game_object)));
         *id
     }
 
-    pub fn get_game_object(&self, id: usize) -> Option<&Mutex<Box<GameObject + 'static>>> {
-        match self.list.iter().find(|&x| x.0 == id) {
-            Some(content) => Some(&content.1),
-            None => None,
-        }
+    pub fn get_game_object(&self, id: usize) -> &Mutex<Box<GameObject + 'static>> {
+        &self.list[&id]
     }
 
     pub fn update(&self, gm: &GameManager) {
