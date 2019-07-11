@@ -8,6 +8,8 @@
 use std::cmp::PartialEq;
 use std::ops::{Add, AddAssign, Div, Mul, Sub, SubAssign};
 
+pub static ZERO: Vec2<isize> = Vec2 { x: 0, y: 0 };
+
 #[derive(Clone, Copy)]
 pub struct Vec2<T> {
    pub x: T,
