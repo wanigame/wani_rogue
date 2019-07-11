@@ -15,6 +15,7 @@ use crate::wani_core::color::Color;
 use crate::wani_core::input_manager::InputKey;
 use crate::wani_core::input_manager::INPUT_MANAGER;
 use crate::wani_core::rect::Rect;
+use crate::wani_core::vector2;
 use crate::wani_core::vector2::Vec2;
 use crate::wani_map::map_component::MapComponent;
 use crate::wani_map::random_map::RandomMap;
@@ -45,43 +46,52 @@ impl Hero {
 impl Updater for Hero {
     fn update(&mut self, gm: &GameManager) {
         let im = INPUT_MANAGER.lock().unwrap();
-        let mut dir = Vec2::new(0, 0);
+
+        let mut in_dir = Vec2::new(0, 0);
         if im.get_key(InputKey::UP) {
-            dir += Vec2::new(0, -1) * 32;
+            in_dir += Vec2::new(0, -1)
         }
         if im.get_key(InputKey::DOWN) {
-            dir += Vec2::new(0, 1) * 32;
+            in_dir += Vec2::new(0, 1)
         }
         if im.get_key(InputKey::LEFT) {
-            dir += Vec2::new(-1, 0) * 32;
+            in_dir += Vec2::new(-1, 0)
         }
         if im.get_key(InputKey::RIGHT) {
-            dir += Vec2::new(1, 0) * 32;
+            in_dir += Vec2::new(1, 0)
         }
 
-        let rmap = gm.get_map().lock().unwrap();
-        let map = rmap.as_any().downcast_ref::<RandomMap>().unwrap();
+        if in_dir != vector2::ZERO {
+            let rmap = gm.get_map().lock().unwrap();
+            let map = rmap.as_any().downcast_ref::<RandomMap>().unwrap();
 
-        let mut _dir;
-        _dir = Vec2::new(dir.x, 0);
-        match map.get_component(&((self.position + _dir) / 32)) {
-            Some(comp) => match comp {
-                MapComponent::WALL => {}
-                _ => {
-                    self.r#move(_dir);
+            let mut move_dir = Vec2::new(0, 0);
+            let mut dir;
+            dir = Vec2::new(in_dir.x, 0);
+            match map.get_component(&(self.position / 32 + dir)) {
+                Some(comp) => match comp {
+                    MapComponent::WALL => {}
+                    _ => move_dir += dir,
+                },
+                None => {}
+            }
+            dir = Vec2::new(0, in_dir.y);
+            match map.get_component(&(self.position / 32 + dir)) {
+                Some(comp) => match comp {
+                    MapComponent::WALL => {}
+                    _ => move_dir += dir,
+                },
+                None => {}
+            }
+            if move_dir != vector2::ZERO {
+                match map.get_component(&(self.position / 32 + move_dir)) {
+                    Some(comp) => match comp {
+                        MapComponent::WALL => {}
+                        _ => self.r#move(move_dir * 32),
+                    },
+                    None => {}
                 }
-            },
-            None => {}
-        }
-        _dir = Vec2::new(0, dir.y);
-        match map.get_component(&((self.position + _dir) / 32)) {
-            Some(comp) => match comp {
-                MapComponent::WALL => {}
-                _ => {
-                    self.r#move(_dir);
-                }
-            },
-            None => {}
+            }
         }
     }
 }
