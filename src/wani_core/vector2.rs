@@ -9,6 +9,10 @@ use std::cmp::PartialEq;
 use std::ops::{Add, AddAssign, Div, Mul, Sub, SubAssign};
 
 pub static ZERO: Vec2<isize> = Vec2 { x: 0, y: 0 };
+pub static UP: Vec2<isize> = Vec2 { x: 0, y: -1 };
+pub static DOWN: Vec2<isize> = Vec2 { x: 0, y: 1 };
+pub static LEFT: Vec2<isize> = Vec2 { x: -1, y: 0 };
+pub static RIGHT: Vec2<isize> = Vec2 { x: 1, y: 0 };
 
 #[derive(Clone, Copy)]
 pub struct Vec2<T> {
