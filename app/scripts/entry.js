@@ -30,6 +30,9 @@ class Entry {
             js_draw_rect: function (x, y, w, h, r, g, b, a) {
                 this.painter.draw_rect(x, y, w, h, this.painter.color(r, g, b, a));
             }.bind(this),
+            js_draw_image: function (index, sx, sy, sw, sh, dx, dy, dw, dh) {
+                this.painter.draw_rect(index, sx, sy, sw, sh, dx, dy, dw, dh);
+            }.bind(this),
         }
     }
 
