@@ -37,7 +37,7 @@ enum Animation {
 }
 
 pub struct Hero {
-    position: Vec2<isize>,
+    position: Vec2,
 
     anime: Animation,
     animating: bool,
@@ -55,11 +55,11 @@ impl Hero {
         }
     }
 
-    fn r#move(&mut self, direction: Vec2<isize>) {
+    fn r#move(&mut self, direction: Vec2) {
         self.position += direction;
     }
 
-    pub fn teleport(&mut self, coord: &Vec2<isize>) {
+    pub fn teleport(&mut self, coord: &Vec2) {
         self.position = *coord;
     }
 
@@ -220,7 +220,7 @@ impl Drawer for Hero {
 }
 
 impl GameObject for Hero {
-    fn get_position(&self) -> Vec2<isize> {
+    fn get_position(&self) -> Vec2 {
         self.position
     }
 

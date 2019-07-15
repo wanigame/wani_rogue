@@ -165,7 +165,7 @@ impl RandomMap {
         map
     }
 
-    fn make_post(map: &Map) -> Vec<Vec2<isize>> {
+    fn make_post(map: &Map) -> Vec<Vec2> {
         let w = map[0].len();
         let h = map.len();
 
@@ -291,18 +291,18 @@ impl RandomMap {
         map
     }
 
-    pub fn get_component(&self, coord: &Vec2<isize>) -> Option<MapComponent> {
+    pub fn get_component(&self, coord: &Vec2) -> Option<MapComponent> {
         let mut comp = None;
         if Rect::new(0, 0, self.map[0].len() - 1, self.map.len() - 1).contains(coord) {
             comp = Some(self.map[coord.y as usize][coord.x as usize])
         }
         comp
     }
-    fn _get_component(map: &Map, coord: &Vec2<isize>) -> MapComponent {
+    fn _get_component(map: &Map, coord: &Vec2) -> MapComponent {
         map[coord.y as usize][coord.x as usize]
     }
 
-    pub fn respawnable_coord(&self) -> Vec2<isize> {
+    pub fn respawnable_coord(&self) -> Vec2 {
         let w = self.map[0].len();
         let h = self.map.len();
         loop {
@@ -345,7 +345,7 @@ impl Drawer for RandomMap {
 }
 
 impl GameObject for RandomMap {
-    fn get_position(&self) -> Vec2<isize> {
+    fn get_position(&self) -> Vec2 {
         Vec2::new(0, 0)
     }
 

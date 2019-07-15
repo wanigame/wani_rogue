@@ -8,52 +8,35 @@
 use std::cmp::PartialEq;
 use std::ops::{Add, AddAssign, Div, Mul, Sub, SubAssign};
 
-pub static ZERO: Vec2<isize> = Vec2 { x: 0, y: 0 };
-pub static UP: Vec2<isize> = Vec2 { x: 0, y: -1 };
-pub static DOWN: Vec2<isize> = Vec2 { x: 0, y: 1 };
-pub static LEFT: Vec2<isize> = Vec2 { x: -1, y: 0 };
-pub static RIGHT: Vec2<isize> = Vec2 { x: 1, y: 0 };
+pub static ZERO: Vec2 = Vec2 { x: 0, y: 0 };
+pub static UP: Vec2 = Vec2 { x: 0, y: -1 };
+pub static DOWN: Vec2 = Vec2 { x: 0, y: 1 };
+pub static LEFT: Vec2 = Vec2 { x: -1, y: 0 };
+pub static RIGHT: Vec2 = Vec2 { x: 1, y: 0 };
 
 #[derive(Clone, Copy)]
-pub struct Vec2<T> {
-   pub x: T,
-   pub y: T,
+pub struct Vec2 {
+   pub x: isize,
+   pub y: isize,
 }
 
-impl<T> Vec2<T> {
-   pub fn new(x: T, y: T) -> Self {
+impl Vec2 {
+   pub fn new(x: isize, y: isize) -> Self {
       Vec2 { x, y }
    }
-}
 
-impl Vec2<isize> {
    pub fn len(self) -> f32 {
       ((self.x * self.x + self.y * self.y) as f32).sqrt()
    }
 }
 
-impl From<Vec2<isize>> for Vec2<usize> {
-   fn from(from: Vec2<isize>) -> Self {
-      Vec2 {
-         x: from.x as usize,
-         y: from.y as usize,
-      }
-   }
-}
-
-impl<T> PartialEq for Vec2<T>
-where
-   T: PartialEq,
-{
+impl PartialEq for Vec2 {
    fn eq(&self, other: &Self) -> bool {
       self.x == other.x && self.y == other.y
    }
 }
 
-impl<T> Add for Vec2<T>
-where
-   T: Add<Output = T>,
-{
+impl Add for Vec2 {
    type Output = Self;
 
    fn add(self, other: Self) -> Self {
@@ -64,23 +47,17 @@ where
    }
 }
 
-impl<T> AddAssign for Vec2<T>
-where
-   T: AddAssign,
-{
+impl AddAssign for Vec2 {
    fn add_assign(&mut self, rhs: Self) {
       self.x += rhs.x;
       self.y += rhs.y;
    }
 }
 
-impl<T> Div<T> for Vec2<T>
-where
-   T: Div<Output = T> + Copy,
-{
+impl Div<isize> for Vec2 {
    type Output = Self;
 
-   fn div(self, rhs: T) -> Self {
+   fn div(self, rhs: isize) -> Self {
       Vec2 {
          x: self.x / rhs,
          y: self.y / rhs,
@@ -88,13 +65,10 @@ where
    }
 }
 
-impl<T> Mul<T> for Vec2<T>
-where
-   T: Mul<Output = T> + Copy,
-{
+impl Mul<isize> for Vec2 {
    type Output = Self;
 
-   fn mul(self, rhs: T) -> Self {
+   fn mul(self, rhs: isize) -> Self {
       Vec2 {
          x: self.x * rhs,
          y: self.y * rhs,
@@ -102,10 +76,7 @@ where
    }
 }
 
-impl<T> Sub for Vec2<T>
-where
-   T: Sub<Output = T>,
-{
+impl Sub for Vec2 {
    type Output = Self;
 
    fn sub(self, other: Self) -> Self {
@@ -116,10 +87,7 @@ where
    }
 }
 
-impl<T> SubAssign for Vec2<T>
-where
-   T: SubAssign,
-{
+impl SubAssign for Vec2 {
    fn sub_assign(&mut self, rhs: Self) {
       self.x -= rhs.x;
       self.y -= rhs.y;
