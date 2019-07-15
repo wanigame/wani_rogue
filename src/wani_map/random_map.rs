@@ -220,7 +220,7 @@ impl RandomMap {
     }
 
     /// Initialize step 3: Remove dead end.
-    pub fn remove_deadend(&mut self) {
+    fn remove_deadend(&mut self) {
         let w = self.size.width;
         let h = self.size.height;
         let mut count_road = vec![vec![-1; w]; h];
