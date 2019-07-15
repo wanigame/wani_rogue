@@ -12,6 +12,7 @@ use crate::game_manager::GameManager;
 use crate::wani_core::camera::DRAW_OFFSET;
 use crate::wani_core::color::Color;
 use crate::wani_core::rect::Rect;
+use crate::wani_core::vector2;
 use crate::wani_core::vector2::Vec2;
 use crate::wani_map::map_component::MapComponent;
 use crate::wani_trait::drawer::Drawer;
@@ -20,9 +21,16 @@ use crate::wani_trait::updater::Updater;
 
 type Map = Vec<Vec<MapComponent>>;
 
+/// Size of Map
+pub struct MapSize {
+    width: usize,
+    height: usize,
+}
+
 /// Entity of map
 pub struct RandomMap {
     pub map: Map,
+    pub size: MapSize,
 }
 
 impl RandomMap {
@@ -30,17 +38,19 @@ impl RandomMap {
     pub fn new(width: usize, height: usize) -> Self {
         let (w, h) = RandomMap::correct_size(width, height);
 
-        let mut map = vec![vec![MapComponent::NONE; w]; h];
+        let mut rm = RandomMap {
+            map: vec![vec![MapComponent::NONE; w]; h],
+            size: MapSize {
+                width: w,
+                height: h,
+            },
+        };
 
-        log("map_init");
-        map = RandomMap::build_maze(map);
-        log("build_maze");
-        map = RandomMap::build_room(map);
-        log("build_rooom");
-        map = RandomMap::remove_deadend(map);
-        log("remove_deadend");
+        rm.build_maze();
+        rm.build_room();
+        rm.remove_deadend();
 
-        RandomMap { map }
+        rm
     }
 
     /// Correct size to the closest 2n + 3 (0 < n) size.
@@ -57,17 +67,17 @@ impl RandomMap {
     }
 
     /// Initialize step 1: Build a maze by stretching the wall.
-    fn build_maze(mut map: Map) -> Map {
-        map = RandomMap::build_outerwall(map);
+    fn build_maze(&mut self) {
+        self.build_outerwall();
 
-        let mut posts = RandomMap::make_post(&map);
+        let mut posts = self.make_post();
 
         'post: while posts.len() > 0 {
             // Create base point for wall stretching
-            let post_index_start = random(0..posts.len() as isize) as usize;
+            let post_index_start = urandom(0..posts.len());
             let post_start = &posts[post_index_start];
 
-            match RandomMap::_get_component(&map, post_start) {
+            match self.get_component(post_start).unwrap() {
                 MapComponent::WALL => {
                     posts.remove(post_index_start);
                     continue;
@@ -78,18 +88,14 @@ impl RandomMap {
                     wall_candidacy.push(cursor);
 
                     'grow: loop {
-                        match RandomMap::_get_component(&map, &cursor) {
+                        match self.get_component(&cursor).unwrap() {
                             MapComponent::NONE => {
-                                let mut direction = vec![
-                                    Vec2::new(0, -1), // UP
-                                    Vec2::new(0, 1),  // DOWN
-                                    Vec2::new(-1, 0), // LEFT
-                                    Vec2::new(1, 0),  // RIGHT
-                                ];
+                                let mut direction =
+                                    vec![vector2::UP, vector2::DOWN, vector2::LEFT, vector2::RIGHT];
 
                                 'dir: while direction.len() > 0 {
                                     // Decide direction to stretch the wall
-                                    let rand = random(0..direction.len() as isize) as usize;
+                                    let rand = urandom(0..direction.len());
 
                                     let dir = direction[rand];
                                     direction.remove(rand);
@@ -117,7 +123,7 @@ impl RandomMap {
                                 let mut wall_prev = wall_candidacy[0];
                                 let mut index_end = 0;
                                 for i in 0..wall_candidacy.len() {
-                                    if (wall_candidacy[i] - wall_prev).len() <= 1.0 {
+                                    if wall_candidacy[i].dist(wall_prev) <= 1.0 {
                                         wall_prev = wall_candidacy[i];
                                         index_end = i;
                                     }
@@ -130,8 +136,8 @@ impl RandomMap {
                                 // Build walls on consecutive wall candidates
                                 let mut wall_prev = wall_candidacy[0];
                                 for v in &wall_candidacy {
-                                    if (*v - wall_prev).len() <= 1.0 {
-                                        map[v.y as usize][v.x as usize] = MapComponent::WALL;
+                                    if v.dist(wall_prev) <= 1.0 {
+                                        self.map[v.y as usize][v.x as usize] = MapComponent::WALL;
                                         wall_prev = *v;
                                     }
                                 }
@@ -146,32 +152,30 @@ impl RandomMap {
                 _ => {}
             }
         }
-
-        map
     }
 
-    fn build_outerwall(mut map: Map) -> Map {
-        let w = map[0].len();
-        let h = map.len();
+    /// Build the outer wall.
+    fn build_outerwall(&mut self) {
+        let w = self.size.width;
+        let h = self.size.height;
 
         for i in 0..w {
             for j in 0..h {
                 if i == 0 || i == w - 1 || j == 0 || j == h - 1 {
-                    map[j][i] = MapComponent::WALL;
+                    self.map[j][i] = MapComponent::WALL;
                 }
             }
         }
-
-        map
     }
 
-    fn make_post(map: &Map) -> Vec<Vec2> {
-        let w = map[0].len();
-        let h = map.len();
+    /// Make posts and return coordinate of posts.
+    fn make_post(&self) -> Vec<Vec2> {
+        let w = self.size.width;
+        let h = self.size.height;
 
         let mut posts = Vec::new();
-        for i in 0..((w - 3) / 2) {
-            for j in 0..((h - 3) / 2) {
+        for i in 0..(w - 3) / 2 {
+            for j in 0..(h - 3) / 2 {
                 posts.push(Vec2::new((i as isize + 1) * 2, (j as isize + 1) * 2));
             }
         }
@@ -180,7 +184,7 @@ impl RandomMap {
     }
 
     /// Initialize step 2: Build room.
-    fn build_room(mut map: Map) -> Map {
+    fn build_room(&mut self) {
         let count_room = random(5..10);
 
         for _ in 0..count_room {
@@ -189,13 +193,13 @@ impl RandomMap {
             'retry: for _ in 0..retry {
                 let w = random(8..16) as usize / 2 * 2 + 1;
                 let h = random(8..16) as usize / 2 * 2 + 1;
-                let x = random(1..(map[0].len() - w - 1) as isize) as usize / 2 * 2 + 1;
-                let y = random(1..(map.len() - h - 1) as isize) as usize / 2 * 2 + 1;
+                let x = random(1..(self.size.width - w - 1) as isize) as usize / 2 * 2 + 1;
+                let y = random(1..(self.size.height - h - 1) as isize) as usize / 2 * 2 + 1;
 
                 // Check if the room is not already
                 for i in y..y + h {
                     for j in x..x + w {
-                        match map[i][j] {
+                        match self.map[i][j] {
                             MapComponent::ROOM => {
                                 continue 'retry;
                             }
@@ -207,44 +211,42 @@ impl RandomMap {
                 // Build the room
                 for i in y..y + h {
                     for j in x..x + w {
-                        map[i][j] = MapComponent::ROOM;
+                        self.map[i][j] = MapComponent::ROOM;
                     }
                 }
                 break;
             }
         }
-
-        map
     }
 
     /// Initialize step 3: Remove dead end.
-    pub fn remove_deadend(mut map: Map) -> Map {
-        let w = map[0].len();
-        let h = map.len();
+    pub fn remove_deadend(&mut self) {
+        let w = self.size.width;
+        let h = self.size.height;
         let mut count_road = vec![vec![-1; w]; h];
 
         // Count the number of branches
         for i in 1..h - 1 {
             for j in 1..w - 1 {
-                match map[i][j] {
+                match self.map[i][j] {
                     MapComponent::NONE => {
                         let mut count = 0;
-                        match map[i - 1][j] {
+                        match self.map[i - 1][j] {
                             MapComponent::NONE => count += 1,
                             MapComponent::ROOM => count += 1,
                             _ => {}
                         }
-                        match map[i + 1][j] {
+                        match self.map[i + 1][j] {
                             MapComponent::NONE => count += 1,
                             MapComponent::ROOM => count += 1,
                             _ => {}
                         }
-                        match map[i][j - 1] {
+                        match self.map[i][j - 1] {
                             MapComponent::NONE => count += 1,
                             MapComponent::ROOM => count += 1,
                             _ => {}
                         }
-                        match map[i][j + 1] {
+                        match self.map[i][j + 1] {
                             MapComponent::NONE => count += 1,
                             MapComponent::ROOM => count += 1,
                             _ => {}
@@ -264,7 +266,7 @@ impl RandomMap {
                     let mut l = j;
 
                     loop {
-                        map[k][l] = MapComponent::WALL;
+                        self.map[k][l] = MapComponent::WALL;
                         count_road[k][l] -= 1;
                         count_road[k - 1][l] -= 1; // up
                         count_road[k + 1][l] -= 1; // down
@@ -287,10 +289,9 @@ impl RandomMap {
                 }
             }
         }
-
-        map
     }
 
+    /// Return map component of given coordinates.
     pub fn get_component(&self, coord: &Vec2) -> Option<MapComponent> {
         let mut comp = None;
         if Rect::new(0, 0, self.map[0].len() - 1, self.map.len() - 1).contains(coord) {
@@ -298,16 +299,14 @@ impl RandomMap {
         }
         comp
     }
-    fn _get_component(map: &Map, coord: &Vec2) -> MapComponent {
-        map[coord.y as usize][coord.x as usize]
-    }
 
+    /// Return random coordinate of room.
     pub fn respawnable_coord(&self) -> Vec2 {
-        let w = self.map[0].len();
-        let h = self.map.len();
+        let w = self.size.width;
+        let h = self.size.height;
         loop {
             let rand_pos = Vec2::new(random(0..w as isize), random(0..h as isize));
-            match RandomMap::_get_component(&self.map, &rand_pos) {
+            match self.get_component(&rand_pos).unwrap() {
                 MapComponent::ROOM => return rand_pos * 32,
                 _ => {}
             }
