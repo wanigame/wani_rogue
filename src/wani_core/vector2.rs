@@ -25,8 +25,14 @@ impl Vec2 {
       Vec2 { x, y }
    }
 
-   pub fn len(self) -> f32 {
+   /// Return length of vector.
+   pub fn len(&self) -> f32 {
       ((self.x * self.x + self.y * self.y) as f32).sqrt()
+   }
+
+   /// Return distance from self to argument.
+   pub fn dist(&self, to: Self) -> f32 {
+      (to - *self).len()
    }
 }
 
