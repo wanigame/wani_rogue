@@ -45,7 +45,7 @@ impl Rect {
       }
    }
 
-   pub fn contains(&self, point: &Vec2) -> bool {
+   pub fn contains(&self, point: Vec2) -> bool {
       self.left() <= point.x
          && point.x <= self.right()
          && self.top() <= point.y

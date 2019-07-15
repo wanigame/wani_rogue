@@ -85,7 +85,7 @@ impl Hero {
             let mut move_dir = Vec2::new(0, 0);
             let mut dir;
             dir = Vec2::new(in_dir.x, 0);
-            match map.get_component(&(self.position / 32 + dir)) {
+            match map.get_component(self.position / 32 + dir) {
                 Some(comp) => match comp {
                     MapComponent::WALL => {}
                     _ => move_dir += dir,
@@ -93,7 +93,7 @@ impl Hero {
                 None => {}
             }
             dir = Vec2::new(0, in_dir.y);
-            match map.get_component(&(self.position / 32 + dir)) {
+            match map.get_component(self.position / 32 + dir) {
                 Some(comp) => match comp {
                     MapComponent::WALL => {}
                     _ => move_dir += dir,
@@ -101,7 +101,7 @@ impl Hero {
                 None => {}
             }
             if move_dir != vector2::ZERO {
-                match map.get_component(&(self.position / 32 + move_dir)) {
+                match map.get_component(self.position / 32 + move_dir) {
                     Some(comp) => match comp {
                         MapComponent::WALL => {}
                         _ => {

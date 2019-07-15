@@ -77,7 +77,7 @@ impl RandomMap {
             let post_index_start = urandom(0..posts.len());
             let post_start = &posts[post_index_start];
 
-            match self.get_component(post_start).unwrap() {
+            match self.get_component(*post_start).unwrap() {
                 MapComponent::WALL => {
                     posts.remove(post_index_start);
                     continue;
@@ -88,7 +88,7 @@ impl RandomMap {
                     wall_candidacy.push(cursor);
 
                     'grow: loop {
-                        match self.get_component(&cursor).unwrap() {
+                        match self.get_component(cursor).unwrap() {
                             MapComponent::NONE => {
                                 let mut direction =
                                     vec![vector2::UP, vector2::DOWN, vector2::LEFT, vector2::RIGHT];
@@ -292,7 +292,7 @@ impl RandomMap {
     }
 
     /// Return map component of given coordinates.
-    pub fn get_component(&self, coord: &Vec2) -> Option<MapComponent> {
+    pub fn get_component(&self, coord: Vec2) -> Option<MapComponent> {
         let mut comp = None;
         if Rect::new(0, 0, self.map[0].len() - 1, self.map.len() - 1).contains(coord) {
             comp = Some(self.map[coord.y as usize][coord.x as usize])
@@ -306,7 +306,7 @@ impl RandomMap {
         let h = self.size.height;
         loop {
             let rand_pos = Vec2::new(random(0..w as isize), random(0..h as isize));
-            match self.get_component(&rand_pos).unwrap() {
+            match self.get_component(rand_pos).unwrap() {
                 MapComponent::ROOM => return rand_pos * 32,
                 _ => {}
             }
