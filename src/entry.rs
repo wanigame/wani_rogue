@@ -34,6 +34,10 @@ pub fn log(log: &str) {
 pub fn random(range: Range<isize>) -> isize {
     unsafe { js_random(range.end - range.start) + range.start }
 }
+/// Generate random numbers from range<usize>.
+pub fn urandom(range: Range<usize>) -> usize {
+    unsafe { js_random((range.end - range.start) as isize) as usize + range.start }
+}
 
 pub fn draw_rect(rect: Rect, color: Color) {
     unsafe {
