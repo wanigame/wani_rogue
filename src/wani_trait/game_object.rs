@@ -7,12 +7,9 @@
 
 use std::any::Any;
 
-use crate::wani_core::vector2::Vec2;
 use crate::wani_trait::drawer::Drawer;
 use crate::wani_trait::updater::Updater;
 
 pub trait GameObject: Drawer + Updater + Send + Any {
-    fn get_position(&self) -> Vec2;
-
     fn as_any(&self) -> &Any;
 }

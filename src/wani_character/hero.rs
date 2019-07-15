@@ -196,6 +196,10 @@ impl Hero {
             _ => self.animating = false,
         }
     }
+
+    pub fn get_position(&self) -> Vec2 {
+        self.position
+    }
 }
 
 impl Updater for Hero {
@@ -220,10 +224,6 @@ impl Drawer for Hero {
 }
 
 impl GameObject for Hero {
-    fn get_position(&self) -> Vec2 {
-        self.position
-    }
-
     fn as_any(&self) -> &Any {
         self
     }

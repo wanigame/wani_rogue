@@ -54,7 +54,14 @@ impl GameManager {
         self.gom.update(&self);
 
         // calculate offset
-        let target = self.get_hero().lock().unwrap().get_position();
+        let target = self
+            .get_hero()
+            .lock()
+            .unwrap()
+            .as_any()
+            .downcast_ref::<Hero>()
+            .unwrap()
+            .get_position();
         self.main_camera.offset = SCREEN_SIZE.lock().unwrap().center() - Vec2::new(16, 16) - target;
         // move camera offset
         self.main_camera.set();

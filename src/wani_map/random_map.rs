@@ -345,10 +345,6 @@ impl Drawer for RandomMap {
 }
 
 impl GameObject for RandomMap {
-    fn get_position(&self) -> Vec2 {
-        Vec2::new(0, 0)
-    }
-
     fn as_any(&self) -> &Any {
         self
     }
