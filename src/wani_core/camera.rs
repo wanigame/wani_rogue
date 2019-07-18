@@ -10,11 +10,11 @@ use std::sync::Mutex;
 use crate::wani_core::vector2::Vec2;
 
 lazy_static! {
-    pub static ref DRAW_OFFSET: Mutex<Vec2<isize>> = Mutex::new(Vec2::new(0, 0));
+    pub static ref DRAW_OFFSET: Mutex<Vec2> = Mutex::new(Vec2::new(0, 0));
 }
 
 pub struct Camera {
-    pub offset: Vec2<isize>,
+    pub offset: Vec2,
 }
 
 impl Camera {

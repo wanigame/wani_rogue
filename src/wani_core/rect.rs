@@ -33,22 +33,29 @@ impl Rect {
       self.y + self.h as isize
    }
 
-   pub fn slide(&mut self, vec: &Vec2<isize>) {
+   pub fn slide(&mut self, vec: &Vec2) {
       self.x += vec.x;
       self.y += vec.y;
    }
 
-   pub fn center(&self) -> Vec2<isize> {
+   pub fn center(&self) -> Vec2 {
       Vec2 {
          x: (self.x + self.w as isize) / 2,
          y: (self.y + self.h as isize) / 2,
       }
    }
 
-   pub fn contains(&self, point: &Vec2<isize>) -> bool {
+   pub fn contains(&self, point: Vec2) -> bool {
       self.left() <= point.x
          && point.x <= self.right()
          && self.top() <= point.y
          && point.y <= self.bottom()
+   }
+
+   pub fn contains_rect(&self, rect: Rect) -> bool {
+      self.left() <= rect.left() && rect.left() <= self.right()
+         || self.left() <= rect.right() && rect.right() <= self.right()
+         || self.top() <= rect.top() && rect.top() <= self.bottom()
+         || self.top() <= rect.bottom() && rect.bottom() <= self.bottom()
    }
 }

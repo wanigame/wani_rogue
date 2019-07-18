@@ -18,6 +18,17 @@ extern "C" {
     fn js_log(log: u32);
     fn js_random(max: isize) -> isize;
     fn js_draw_rect(x: isize, y: isize, w: usize, h: usize, r: u8, g: u8, b: u8, a: u8);
+    fn js_draw_image(
+        index: usize,
+        sx: isize,
+        sy: isize,
+        sw: usize,
+        sh: usize,
+        dx: isize,
+        dy: isize,
+        dw: usize,
+        dh: usize,
+    );
 }
 
 /// Log message to console in web browser.
@@ -34,11 +45,23 @@ pub fn log(log: &str) {
 pub fn random(range: Range<isize>) -> isize {
     unsafe { js_random(range.end - range.start) + range.start }
 }
+/// Generate random numbers from range<usize>.
+pub fn urandom(range: Range<usize>) -> usize {
+    unsafe { js_random((range.end - range.start) as isize) as usize + range.start }
+}
 
 pub fn draw_rect(rect: Rect, color: Color) {
     unsafe {
         js_draw_rect(
             rect.x, rect.y, rect.w, rect.h, color.r, color.g, color.b, color.a,
+        )
+    }
+}
+
+pub fn draw_image(index: usize, src: Rect, dist: Rect) {
+    unsafe {
+        js_draw_image(
+            index, src.x, src.y, src.w, src.h, dist.x, dist.y, dist.w, dist.h,
         )
     }
 }

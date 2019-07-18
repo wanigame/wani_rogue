@@ -37,7 +37,7 @@ enum Animation {
 }
 
 pub struct Hero {
-    position: Vec2<isize>,
+    position: Vec2,
 
     anime: Animation,
     animating: bool,
@@ -55,11 +55,11 @@ impl Hero {
         }
     }
 
-    fn r#move(&mut self, direction: Vec2<isize>) {
+    fn r#move(&mut self, direction: Vec2) {
         self.position += direction;
     }
 
-    pub fn teleport(&mut self, coord: &Vec2<isize>) {
+    pub fn teleport(&mut self, coord: &Vec2) {
         self.position = *coord;
     }
 
@@ -85,7 +85,7 @@ impl Hero {
             let mut move_dir = Vec2::new(0, 0);
             let mut dir;
             dir = Vec2::new(in_dir.x, 0);
-            match map.get_component(&(self.position / 32 + dir)) {
+            match map.get_component(self.position / 32 + dir) {
                 Some(comp) => match comp {
                     MapComponent::WALL => {}
                     _ => move_dir += dir,
@@ -93,7 +93,7 @@ impl Hero {
                 None => {}
             }
             dir = Vec2::new(0, in_dir.y);
-            match map.get_component(&(self.position / 32 + dir)) {
+            match map.get_component(self.position / 32 + dir) {
                 Some(comp) => match comp {
                     MapComponent::WALL => {}
                     _ => move_dir += dir,
@@ -101,7 +101,7 @@ impl Hero {
                 None => {}
             }
             if move_dir != vector2::ZERO {
-                match map.get_component(&(self.position / 32 + move_dir)) {
+                match map.get_component(self.position / 32 + move_dir) {
                     Some(comp) => match comp {
                         MapComponent::WALL => {}
                         _ => {
@@ -196,6 +196,10 @@ impl Hero {
             _ => self.animating = false,
         }
     }
+
+    pub fn get_position(&self) -> Vec2 {
+        self.position
+    }
 }
 
 impl Updater for Hero {
@@ -220,10 +224,6 @@ impl Drawer for Hero {
 }
 
 impl GameObject for Hero {
-    fn get_position(&self) -> Vec2<isize> {
-        self.position
-    }
-
     fn as_any(&self) -> &Any {
         self
     }
