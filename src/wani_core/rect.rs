@@ -51,4 +51,11 @@ impl Rect {
          && self.top() <= point.y
          && point.y <= self.bottom()
    }
+
+   pub fn contains_rect(&self, rect: Rect) -> bool {
+      self.left() <= rect.left() && rect.left() <= self.right()
+         || self.left() <= rect.right() && rect.right() <= self.right()
+         || self.top() <= rect.top() && rect.top() <= self.bottom()
+         || self.top() <= rect.bottom() && rect.bottom() <= self.bottom()
+   }
 }

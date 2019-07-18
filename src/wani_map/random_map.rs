@@ -573,6 +573,8 @@ impl Updater for RandomMap {
 
 impl Drawer for RandomMap {
     fn draw(&self) {
+        let screen = SCREEN_SIZE.lock().unwrap();
+
         let os = *DRAW_OFFSET.lock().unwrap();
 
         let mut rect = Rect::new(os.x, os.y, 32, 32);
@@ -581,11 +583,13 @@ impl Drawer for RandomMap {
 
         for i in &self.draw_map {
             for j in i {
-                draw_image(
-                    0,
-                    Rect::new((j % 8 * 32) as isize, (j / 8 * 32) as isize, 32, 32),
-                    rect,
-                );
+                if screen.contains_rect(rect) {
+                    draw_image(
+                        0,
+                        Rect::new((j % 8 * 32) as isize, (j / 8 * 32) as isize, 32, 32),
+                        rect,
+                    );
+                }
                 rect.slide(&x_slide);
             }
             rect.x = os.x;
