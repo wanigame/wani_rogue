@@ -29,4 +29,4 @@ Place these file on your server.
 You can see a randomly generated map and operate "WASD" or cursor key.
 
 ### Display
-![screenshot](https://user-images.githubusercontent.com/51026231/60900085-946db780-a2a6-11e9-9f32-70f6044ea16f.gif)
+![github](https://user-images.githubusercontent.com/51026231/61468828-1e113980-a9b9-11e9-8b6b-975c74e4d008.gif)
