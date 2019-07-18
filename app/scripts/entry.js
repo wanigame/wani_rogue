@@ -30,6 +30,9 @@ class Entry {
             js_draw_rect: function (x, y, w, h, r, g, b, a) {
                 this.painter.draw_rect(x, y, w, h, this.painter.color(r, g, b, a));
             }.bind(this),
+            js_draw_image: function (index, sx, sy, sw, sh, dx, dy, dw, dh) {
+                this.painter.draw_image(index, sx, sy, sw, sh, dx, dy, dw, dh);
+            }.bind(this),
         }
     }
 
@@ -39,12 +42,13 @@ class Entry {
             .then((bytes) => WebAssembly.instantiate(bytes, this.imports))
             .then((results) => {
                 this.exports = results.instance.exports;
-                this.exports.init(this.painter.canvas.width, this.painter.canvas.height);
+                this.exports.init(this.painter.buf_canvas.width, this.painter.buf_canvas.height);
 
                 setInterval(() => {
                     this.exports.update();
                     this.painter.clear_rect();
                     this.exports.draw();
+                    this.painter.flip();
                 }, 20); // 50FPS
             });
     }
