@@ -31,7 +31,7 @@ class Entry {
                 this.painter.draw_rect(x, y, w, h, this.painter.color(r, g, b, a));
             }.bind(this),
             js_draw_image: function (index, sx, sy, sw, sh, dx, dy, dw, dh) {
-                this.painter.draw_rect(index, sx, sy, sw, sh, dx, dy, dw, dh);
+                this.painter.draw_image(index, sx, sy, sw, sh, dx, dy, dw, dh);
             }.bind(this),
         }
     }

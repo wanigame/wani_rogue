@@ -10,7 +10,7 @@ use std::any::Any;
 use crate::entry::*;
 use crate::game_manager::GameManager;
 use crate::wani_core::camera::DRAW_OFFSET;
-use crate::wani_core::color::Color;
+// use crate::wani_core::color::Color;
 use crate::wani_core::rect::Rect;
 use crate::wani_core::vector2;
 use crate::wani_core::vector2::Vec2;
@@ -30,6 +30,7 @@ pub struct MapSize {
 /// Entity of map
 pub struct RandomMap {
     pub map: Map,
+    draw_map: Vec<Vec<usize>>,
     pub size: MapSize,
 }
 
@@ -40,6 +41,7 @@ impl RandomMap {
 
         let mut rm = RandomMap {
             map: vec![vec![MapComponent::NONE; w]; h],
+            draw_map: vec![vec![23; w]; h],
             size: MapSize {
                 width: w,
                 height: h,
@@ -49,6 +51,8 @@ impl RandomMap {
         rm.build_maze();
         rm.build_room();
         rm.remove_deadend();
+
+        rm.build_draw_map();
 
         rm
     }
@@ -291,6 +295,255 @@ impl RandomMap {
         }
     }
 
+    /// Build draw map.
+    fn build_draw_map(&mut self) {
+        let w = self.size.width;
+        let h = self.size.height;
+
+        let mut wall_flag = vec![vec![0u8; w]; h];
+
+        // 8 direction
+        let u = vector2::UP;
+        let d = vector2::DOWN;
+        let l = vector2::LEFT;
+        let r = vector2::RIGHT;
+
+        fn is_wall(rm: &RandomMap, coord: Vec2) -> bool {
+            match rm.get_component(coord) {
+                Some(comp) => match comp {
+                    MapComponent::WALL => true,
+                    _ => false,
+                },
+                None => true,
+            }
+        }
+
+        // Flag if there is a wall
+        for i in 0..w {
+            for j in 0..h {
+                let mut flag = 0u8;
+                let target = Vec2::new(i as isize, j as isize);
+
+                flag |= if is_wall(self, target + u + l) {
+                    0b10000000
+                } else {
+                    0
+                };
+                flag |= if is_wall(self, target + u) {
+                    0b01000000
+                } else {
+                    0
+                };
+                flag |= if is_wall(self, target + u + r) {
+                    0b00100000
+                } else {
+                    0
+                };
+                flag |= if is_wall(self, target + l) {
+                    0b00010000
+                } else {
+                    0
+                };
+                flag |= if is_wall(self, target + r) {
+                    0b00001000
+                } else {
+                    0
+                };
+                flag |= if is_wall(self, target + d + l) {
+                    0b00000100
+                } else {
+                    0
+                };
+                flag |= if is_wall(self, target + d) {
+                    0b00000010
+                } else {
+                    0
+                };
+                flag |= if is_wall(self, target + d + r) {
+                    0b00000001
+                } else {
+                    0
+                };
+
+                wall_flag[j][i] = flag;
+            }
+        }
+
+        fn check_flag(chk: u8, flag: u8) -> bool {
+            chk & flag == flag
+        }
+
+        // Pattern match with flag and image
+        for i in 0..w {
+            for j in 0..h {
+                match self.map[j][i] {
+                    MapComponent::WALL => {
+                        let flag = wall_flag[j][i];
+
+                        let mut cross_wall_count = 0;
+                        cross_wall_count += (flag & 0b01000000) >> 6;
+                        cross_wall_count += (flag & 0b00010000) >> 4;
+                        cross_wall_count += (flag & 0b00001000) >> 3;
+                        cross_wall_count += (flag & 0b00000010) >> 1;
+                        let mut slant_wall_count = 0;
+                        slant_wall_count += (flag & 0b10000000) >> 7;
+                        slant_wall_count += (flag & 0b00100000) >> 5;
+                        slant_wall_count += (flag & 0b00000100) >> 2;
+                        slant_wall_count += (flag & 0b00000001) >> 0;
+
+                        match cross_wall_count {
+                            0 => self.draw_map[j][i] = 22,
+                            1 => {
+                                if check_flag(flag, 0b01000000) {
+                                    self.draw_map[j][i] = 20
+                                } else if check_flag(flag, 0b00010000) {
+                                    self.draw_map[j][i] = 13
+                                } else if check_flag(flag, 0b00001000) {
+                                    self.draw_map[j][i] = 11
+                                } else if check_flag(flag, 0b00000010) {
+                                    self.draw_map[j][i] = 4
+                                }
+                            }
+                            2 => {
+                                if check_flag(flag, 0b01000010) {
+                                    self.draw_map[j][i] = 6
+                                } else if check_flag(flag, 0b00011000) {
+                                    self.draw_map[j][i] = 7
+                                } else if check_flag(flag, 0b01010000) {
+                                    if check_flag(flag, 0b10000000) {
+                                        self.draw_map[j][i] = 18
+                                    } else {
+                                        self.draw_map[j][i] = 21
+                                    }
+                                } else if check_flag(flag, 0b01001000) {
+                                    if check_flag(flag, 0b00100000) {
+                                        self.draw_map[j][i] = 16
+                                    } else {
+                                        self.draw_map[j][i] = 19
+                                    }
+                                } else if check_flag(flag, 0b00010010) {
+                                    if check_flag(flag, 0b00000100) {
+                                        self.draw_map[j][i] = 2
+                                    } else {
+                                        self.draw_map[j][i] = 5
+                                    }
+                                } else if check_flag(flag, 0b00001010) {
+                                    if check_flag(flag, 0b00000001) {
+                                        self.draw_map[j][i] = 0
+                                    } else {
+                                        self.draw_map[j][i] = 3
+                                    }
+                                }
+                            }
+                            3 => {
+                                if check_flag(flag, 0b01011000) {
+                                    if check_flag(flag, 0b10100000) {
+                                        self.draw_map[j][i] = 17
+                                    } else if check_flag(flag, 0b10000000) {
+                                        self.draw_map[j][i] = 36
+                                    } else if check_flag(flag, 0b00100000) {
+                                        self.draw_map[j][i] = 34
+                                    } else {
+                                        self.draw_map[j][i] = 32
+                                    }
+                                }
+                                if check_flag(flag, 0b01001010) {
+                                    if check_flag(flag, 0b00100001) {
+                                        self.draw_map[j][i] = 8
+                                    } else if check_flag(flag, 0b00100000) {
+                                        self.draw_map[j][i] = 28
+                                    } else if check_flag(flag, 0b00000001) {
+                                        self.draw_map[j][i] = 26
+                                    } else {
+                                        self.draw_map[j][i] = 24
+                                    }
+                                }
+                                if check_flag(flag, 0b00011010) {
+                                    if check_flag(flag, 0b00000101) {
+                                        self.draw_map[j][i] = 1
+                                    } else if check_flag(flag, 0b00000001) {
+                                        self.draw_map[j][i] = 29
+                                    } else if check_flag(flag, 0b00000100) {
+                                        self.draw_map[j][i] = 27
+                                    } else {
+                                        self.draw_map[j][i] = 25
+                                    }
+                                }
+                                if check_flag(flag, 0b01010010) {
+                                    if check_flag(flag, 0b10000100) {
+                                        self.draw_map[j][i] = 10
+                                    } else if check_flag(flag, 0b00000100) {
+                                        self.draw_map[j][i] = 37
+                                    } else if check_flag(flag, 0b10000000) {
+                                        self.draw_map[j][i] = 35
+                                    } else {
+                                        self.draw_map[j][i] = 33
+                                    }
+                                }
+                            }
+                            4 => match slant_wall_count {
+                                0 => self.draw_map[j][i] = 12,
+                                1 => {
+                                    if check_flag(flag, 0b10000000) {
+                                        self.draw_map[j][i] = 39
+                                    }
+                                    if check_flag(flag, 0b00100000) {
+                                        self.draw_map[j][i] = 38
+                                    }
+                                    if check_flag(flag, 0b00000001) {
+                                        self.draw_map[j][i] = 30
+                                    }
+                                    if check_flag(flag, 0b00100100) {
+                                        self.draw_map[j][i] = 31
+                                    }
+                                }
+                                2 => {
+                                    if check_flag(flag, 0b10000001) {
+                                        self.draw_map[j][i] = 15
+                                    }
+                                    if check_flag(flag, 0b00100100) {
+                                        self.draw_map[j][i] = 14
+                                    }
+
+                                    if check_flag(flag, 0b10100000) {
+                                        self.draw_map[j][i] = 49
+                                    }
+                                    if check_flag(flag, 0b00100001) {
+                                        self.draw_map[j][i] = 48
+                                    }
+                                    if check_flag(flag, 0b00000101) {
+                                        self.draw_map[j][i] = 40
+                                    }
+                                    if check_flag(flag, 0b10000100) {
+                                        self.draw_map[j][i] = 41
+                                    }
+                                }
+                                3 => {
+                                    if !check_flag(flag, 0b10000000) {
+                                        self.draw_map[j][i] = 42
+                                    }
+                                    if !check_flag(flag, 0b00100000) {
+                                        self.draw_map[j][i] = 43
+                                    }
+                                    if !check_flag(flag, 0b00000001) {
+                                        self.draw_map[j][i] = 51
+                                    }
+                                    if !check_flag(flag, 0b00000100) {
+                                        self.draw_map[j][i] = 50
+                                    }
+                                }
+                                4 => self.draw_map[j][i] = 9,
+                                _ => {}
+                            },
+                            _ => {}
+                        }
+                    }
+                    _ => {}
+                }
+            }
+        }
+    }
+
     /// Return map component of given coordinates.
     pub fn get_component(&self, coord: Vec2) -> Option<MapComponent> {
         let mut comp = None;
@@ -323,18 +576,16 @@ impl Drawer for RandomMap {
         let os = *DRAW_OFFSET.lock().unwrap();
 
         let mut rect = Rect::new(os.x, os.y, 32, 32);
-        let mut color;
         let x_slide = Vec2::new(32, 0);
         let y_slide = Vec2::new(0, 32);
 
-        for i in &self.map {
+        for i in &self.draw_map {
             for j in i {
-                match j {
-                    MapComponent::WALL => color = Color::new(0x5f, 0x5f, 0x5f, 0xff),
-                    MapComponent::NONE => color = Color::new(0xff, 0xff, 0xff, 0xff),
-                    MapComponent::ROOM => color = Color::new(0xff, 0xff, 0xff, 0xff),
-                }
-                draw_rect(rect, color);
+                draw_image(
+                    0,
+                    Rect::new((j % 8 * 32) as isize, (j / 8 * 32) as isize, 32, 32),
+                    rect,
+                );
                 rect.slide(&x_slide);
             }
             rect.x = os.x;
